@@ -3,5 +3,8 @@
 
     <string name="app_name">Color Me This!</string>
     <string name="capture">Capture Me This!</string>
+    <string name="names">Developers:\nAndres Avila\nSydney Mercier\nKevin Rei Mateo</string>
+    <string name="info">We are students at the University of Texas at Austin with a mission to
+                        help colorblind people and graphic designers with this app.</string>
 
 </resources>

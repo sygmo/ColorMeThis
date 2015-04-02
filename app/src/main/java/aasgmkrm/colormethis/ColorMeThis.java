@@ -2,6 +2,7 @@ package aasgmkrm.colormethis;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -10,6 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -76,6 +80,42 @@ public class ColorMeThis extends Activity {
 
         findViewById(R.id.button_capture).setOnClickListener(mCaptureClickListener);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.about:
+                return true;
+            case R.id.settings:
+                startActivityForResult(new Intent(this, Settings.class), 0);
+                return true;
+            /**
+            case R.id.palette:
+                return true;
+            */
+        }
+        return false;
+    }
+
+    /** For SETTINGS: adjustments to be made at a later time.
+     *  Files to check: Settings.java, preferences.xml
+     *
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RESULT_CANCELED) {
+            ...
+        }
+    }
+    */
 
     private PictureCallback mPicture = new PictureCallback() {
 
