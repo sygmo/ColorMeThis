@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
@@ -24,9 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 
 public class ColorMeThis extends Activity {
@@ -45,7 +42,16 @@ public class ColorMeThis extends Activity {
         // Create an instance of Camera.
         mCamera = getCameraInstance();
 
-        /** Metering and focus areas. */
+        /** Placing preview in a layout. */
+
+        // Create the Preview view and set it as the content of the activity.
+        mPreview = new CameraPreview(this, mCamera);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.addView(mPreview);
+
+        findViewById(R.id.button_capture).setOnClickListener(mCaptureClickListener);
+
+/*        *//** Metering and focus areas. *//*
 
         // Set Camera parameters.
         Camera.Parameters params = mCamera.getParameters();
@@ -69,16 +75,23 @@ public class ColorMeThis extends Activity {
             params.setMeteringAreas(meteringAreas);
         }
 
-        mCamera.setParameters(params);
+        mCamera.setParameters(params);*/
+    }
 
-        /** Placing preview in a layout. */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        releaseCamera();
+    }
 
-        // Create the Preview view and set it as the content of the activity.
-        mPreview = new CameraPreview(this, mCamera);
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-        preview.addView(mPreview);
+    private void releaseCamera() {
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
 
-        findViewById(R.id.button_capture).setOnClickListener(mCaptureClickListener);
+            mCamera.release();
+            mCamera = null;
+        }
     }
 
     @Override
@@ -228,6 +241,11 @@ public class ColorMeThis extends Activity {
 
             // Set preview size and make any resize, rotate, or reformatting changes here.
             // When setting preview size, values from getSupportedPreviewSizes() MUST be used.
+            if (mCamera != null) {
+                Camera.Parameters params = mCamera.getParameters();
+                mCamera.setParameters(params);
+            }
+
 
             // Start preview with new settings.
             try {
