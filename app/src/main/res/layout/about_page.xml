@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/project_info"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:weightSum="1">
+
+    <!-- Will add the icon when available.
+    <ImageView
+        android:id="@+id/colormethis_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="500px"
+        android:src="@drawable/icon"
+        android:layout_weight="0.19"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="25dp" />
+    -->
+
+    <TextView android:id="@+id/names"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25px"
+        android:textColor="#000000"
+        android:text="@string/names"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20dp" />
+
+    <TextView android:id="@+id/info"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25px"
+        android:textColor="#000000"
+        android:text="We are students at the University of Texas at Austin with "
+        android:layout_gravity="center_horizontal"
+        android:textSize="15dp" />
+
+</LinearLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Will be adding more settings options in the future.
+         Seems like most of the preferences we will be using are checkboxes. -->
+
+    <CheckBoxPreference
+        android:key="color_name"
+        android:title="Color Name"
+        android:defaultValue="true"
+        android:summary="Display or hide color names." />
+
+    <CheckBoxPreference
+        android:key="navigator"
+        android:title="Navigator"
+        android:defaultValue="true"
+        android:summary="Display or hide the navigator." />
+
+</PreferenceScreen>
