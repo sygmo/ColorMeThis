@@ -2,7 +2,7 @@ package aasgmkrm.colormethis;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.DialogInterface; // for testing
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
@@ -44,6 +44,10 @@ public class ColorMeThis extends Activity implements
     /** Camera initializations */
     private Camera mCamera;
     private CameraPreview mPreview;
+
+    // touch coordinates
+    private float x;
+    private float y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +136,10 @@ public class ColorMeThis extends Activity implements
 
     @Override
     public boolean onSingleTapUp(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onSingleTapUp: " + event.toString());
+        x = event.getX();
+        y = event.getY();
+
+        Log.d(DEBUG_TAG, "x: " + x + ", y: " + y + ", onSingleTapUp: " + event.toString());
         return true;
     }
 
