@@ -50,18 +50,14 @@ public class ColorMeThis extends Activity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
         mCamera = getCameraInstance();
         mCameraPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mCameraPreview);
 
         mCaptureButton = (Button) findViewById(R.id.button_capture);
-        mCaptureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCamera.takePicture(null, null, mPicture);
-            }
-        });
+        mCaptureButton.setOnClickListener(new CaptureClickListener());
     }
 
     @Override
@@ -128,6 +124,17 @@ public class ColorMeThis extends Activity implements
         return true;
     }
 
+    /** Release the camera in onPause(). */
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mCamera != null) {
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate our menu which can gather user input for switching camera
@@ -179,6 +186,12 @@ public class ColorMeThis extends Activity implements
         return camera;
     }
 
+    private class CaptureClickListener implements View.OnClickListener {
+        public void onClick (View view) {
+            mCamera.takePicture(null, null, mPicture);
+        }
+    }
+
     PictureCallback mPicture = new PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -200,10 +213,10 @@ public class ColorMeThis extends Activity implements
     private static File getOutputMediaFile() {
         File mediaStorageDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                    "MyCameraApp");
+                    "ColorMeThis");
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d("MyCameraApp", "failed to create directory");
+                Log.d("ColorMeThis", "failed to create directory");
                 return null;
             }
         }
