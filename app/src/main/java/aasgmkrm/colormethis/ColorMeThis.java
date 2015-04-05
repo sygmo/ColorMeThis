@@ -3,6 +3,7 @@ package aasgmkrm.colormethis;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
@@ -14,11 +15,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,12 +34,14 @@ public class ColorMeThis extends Activity implements
     private static final String DEBUG_TAG = "Gestures";
     private GestureDetectorCompat mDetector;
 
-    private String TAG = "Color Me This!";
+    private static final String TAG = "Color Me This!";
+    private static final String PIC_TAG = "Picture";
 
     /** Camera declarations. */
     private Camera mCamera;
     private CameraPreview mCameraPreview;
     private Button mCaptureButton;
+    Bitmap mBitmap;
 
     // touch coordinates
     private float x;
@@ -170,18 +172,12 @@ public class ColorMeThis extends Activity implements
      }
      */
 
-    /**
-     * Helper method to access the camera returns null if it cannot get the
-     * camera or does not exist
-     *
-     * @return
-     */
     private Camera getCameraInstance() {
         Camera camera = null;
         try {
             camera = Camera.open();
         } catch (Exception e) {
-            // cannot get camera or does not exist
+            Log.d(TAG, "Camera in use or does not exist: " + e.getMessage());
         }
         return camera;
     }
@@ -203,76 +199,43 @@ public class ColorMeThis extends Activity implements
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
                 fos.close();
-            } catch (FileNotFoundException e) {
 
+                Context context = getApplicationContext();
+                CharSequence text = "Photo saved to " + pictureFile.getPath();
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+
+                mCamera.startPreview();
+            } catch (FileNotFoundException e) {
+                Log.d(PIC_TAG, "File not found: " + e.getMessage());
             } catch (IOException e) {
+                Log.d(PIC_TAG, "IOException: " + e.getMessage());
             }
         }
     };
 
     private static File getOutputMediaFile() {
         File mediaStorageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                    "ColorMeThis");
+                Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_PICTURES),
+                        "ColorMeThis");
+
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d("ColorMeThis", "failed to create directory");
+                Log.d(TAG, "failed to create directory");
                 return null;
             }
         }
+
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                + "IMG_" + timeStamp + ".jpg");
+
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_"
+                + timeStamp + ".jpg");
 
         return mediaFile;
-    }
-}
-
-    /** Checking camera features:
-     *  Camera.getParameters()
-     *  Camera.getCameraInfo()
-     */
-
-class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-    private SurfaceHolder mSurfaceHolder;
-    private Camera mCamera;
-
-    // Constructor that obtains context and camera
-    public CameraPreview(Context context, Camera camera) {
-        super(context);
-        this.mCamera = camera;
-        this.mSurfaceHolder = this.getHolder();
-        this.mSurfaceHolder.addCallback(this);
-        this.mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        try {
-            mCamera.setPreviewDisplay(surfaceHolder);
-            mCamera.startPreview();
-        } catch (IOException e) {
-            // left blank for now
-        }
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        mCamera.stopPreview();
-        mCamera.release();
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
-        mCamera.setDisplayOrientation(90);
-        // start preview with new settings
-        try {
-            mCamera.setPreviewDisplay(surfaceHolder);
-            mCamera.startPreview();
-        } catch (Exception e) {
-            // intentionally left blank for a test
-        }
     }
 }
