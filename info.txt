@@ -1,0 +1,16 @@
+a. Name - UTEID:
+Andres Avila - aa34474
+Kevin Mateo - krm2545
+Sydney Mercier - sgm645
+
+b. Brief instruction:
+
+c. Features / use cases completed:
+
+d. Features / use cases not completed:
+
+e. Features / use cases not part of the prototype:
+
+f. Classes / major chunks of code obtained:
+
+g. Classes / major chunks of code completed:
