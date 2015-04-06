@@ -32,7 +32,7 @@ public class ColorMeThis extends Activity implements
         GestureDetector.OnDoubleTapListener {
 
     private static final String DEBUG_TAG = "Gestures";
-    //private GestureDetectorCompat mDetector;
+    private GestureDetectorCompat mDetector;
 
     private static final String TAG = "Color Me This!";
     private static final String PIC_TAG = "Picture";
@@ -41,6 +41,7 @@ public class ColorMeThis extends Activity implements
     private Camera mCamera;
     private CameraPreview mCameraPreview;
     private Button mCaptureButton;
+    private FrameLayout preview;
     Bitmap mBitmap;
 
     // touch coordinates
@@ -59,7 +60,7 @@ public class ColorMeThis extends Activity implements
 
         mCamera = getCameraInstance();
         mCameraPreview = new CameraPreview(this, mCamera);
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mCameraPreview);
 
         mCaptureButton = (Button) findViewById(R.id.button_capture);
@@ -131,15 +132,48 @@ public class ColorMeThis extends Activity implements
     }
 
     /** Release the camera in onPause(). */
+
+
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(PIC_TAG, "inside onPause");
 
         if (mCamera != null) {
-            mCamera.release();
-            mCamera = null;
+            try{
+                mCamera.stopPreview();
+                mCamera.setPreviewCallback(null);
+                Log.d(PIC_TAG, "release in onPause");
+                mCamera.release();
+                mCamera = null;
+                mCameraPreview.setMCamera(null);
+            }catch(Exception e){}
         }
     }
+
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        Log.d(PIC_TAG, "Inside onResume");
+        if(mCamera != null) {
+            try {
+                mCamera.setPreviewCallback(null);
+                mCamera = getCameraInstance();
+
+                //mCamera.setPreviewCallback(null);
+                //mCameraPreview = new CameraPreview(this, mCamera);//set preview
+                mCameraPreview.setMCamera(mCamera);
+                //preview.addView(mCameraPreview);
+            } catch (Exception e) {
+                Log.d(TAG, "Error starting camera preview: " + e.getMessage());
+            }
+        }
+    }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -153,6 +187,8 @@ public class ColorMeThis extends Activity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.about:
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.settings:
                 startActivityForResult(new Intent(this, Settings.class), 0);
@@ -164,6 +200,8 @@ public class ColorMeThis extends Activity implements
         }
         return false;
     }
+
+
 
     /** For SETTINGS: adjustments to be made at a later time.
      *  Files to check: Settings.java, preferences.xml
@@ -179,11 +217,20 @@ public class ColorMeThis extends Activity implements
     private Camera getCameraInstance() {
         Camera camera = null;
         try {
+            releaseCameraAndPreview();
             camera = Camera.open();
         } catch (Exception e) {
             Log.d(TAG, "Camera in use or does not exist: " + e.getMessage());
         }
         return camera;
+    }
+
+    private void releaseCameraAndPreview() {
+        if (mCamera != null) {
+            Log.d(PIC_TAG, "release in releaseCameraAndPreview");
+            mCamera.release();
+            mCamera = null;
+        }
     }
 
 
@@ -208,6 +255,7 @@ public class ColorMeThis extends Activity implements
                 Context context = getApplicationContext();
                 CharSequence text = "Photo saved to " + pictureFile.getPath();
                 int duration = Toast.LENGTH_SHORT;
+                Log.d(PIC_TAG, pictureFile.getPath());
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();

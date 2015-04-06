@@ -11,7 +11,7 @@ public class Settings extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getPreferenceManager().setSharedPreferencesName("ttt_prefs");
+        getPreferenceManager().setSharedPreferencesName("cmt_prefs");
         addPreferencesFromResource(R.xml.preferences);
     }
 }

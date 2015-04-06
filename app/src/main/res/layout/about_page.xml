@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="25px"
         android:textColor="#000000"
-        android:text="We are students at the University of Texas at Austin with "
+        android:text="@string/info"
         android:layout_gravity="center_horizontal"
         android:textSize="15dp" />
 
