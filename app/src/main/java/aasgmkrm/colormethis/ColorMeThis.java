@@ -32,7 +32,7 @@ public class ColorMeThis extends Activity implements
         GestureDetector.OnDoubleTapListener {
 
     private static final String DEBUG_TAG = "Gestures";
-    private GestureDetectorCompat mDetector;
+    //private GestureDetectorCompat mDetector;
 
     private static final String TAG = "Color Me This!";
     private static final String PIC_TAG = "Picture";
