@@ -53,6 +53,10 @@ public class ColorMeThis extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        // Instantiate gesture detector
+        mDetector = new GestureDetectorCompat(this, this);
+        mDetector.setOnDoubleTapListener(this);
+
         mCamera = getCameraInstance();
         mCameraPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -181,6 +185,7 @@ public class ColorMeThis extends Activity implements
         }
         return camera;
     }
+
 
     private class CaptureClickListener implements View.OnClickListener {
         public void onClick (View view) {
