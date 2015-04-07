@@ -56,6 +56,8 @@ public class ColorMeThis extends Activity implements
     private String selectedImagePath;
     private Button mGrabPhotoButton;
 
+    public final static String WORKSPACE_MESSAGE = "aasgmkrm.colormethis.MESSAGE";
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -264,6 +266,14 @@ public class ColorMeThis extends Activity implements
                 toast.show();
 
                 mCamera.startPreview();
+
+                // open image view (workspace)
+                Intent intent = new Intent(ColorMeThis.this, Workspace.class);
+                intent.putExtra(WORKSPACE_MESSAGE, pictureFile.getPath().toString());
+                startActivity(intent);
+
+
+
             } catch (FileNotFoundException e) {
                 Log.d(PIC_TAG, "File not found: " + e.getMessage());
             } catch (IOException e) {
