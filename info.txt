@@ -1,16 +1,53 @@
 a. Name - UTEID:
-Andres Avila - aa34474
-Kevin Mateo - krm2545
-Sydney Mercier - sgm645
+    Andres Avila - aa34474
+    Kevin Mateo - krm2545
+    Sydney Mercier - sgm645
 
 b. Brief instruction:
+    Color Me This is a color detection application that aims to guide those who are colorblind as well as those who practice graphics design by determining and naming specific colors, their decimal values, and their hexadecimal values.  After opening the app, the user may either take a picture or upload a picture to analyze it.  In the event of a touch on the screen, a specific area or pixel will be selected, and the app will determine what the specific color of that selection is.  On top, there exists a menu that displays the About page listing the developers and mission, a Settings page to make various changes to the app's features, and a Palette page to save the user's favorite colors.
 
 c. Features / use cases completed:
+    - Camera opens and closes without crashing.
+    - Capturing a photo and saving it to an external directory.
+    - Grabbing pre-existing photos.
+	- The color picker (RGB values only, by clicking).
+    - Forced portrait mode, saves picture in portrait mode as well.
+    - The menu, located on the action bar in the overflow.
+    - All menu items present, but only the About page is accessible.
+	- Pulling the photo taken into ImageView.
+    - Touch events, although not specified.
 
-d. Features / use cases not completed:
+d. Features / use cases not completed (in alpha):
+    - Specification of touch events. 
+	- The ability to manipulate the photo (zoom, etc.)
+	- Color names and hexadecimal when color is picked.
+    - The information bar that displays the color and other info.
+    - The ability to copy the hexadecimal value to clipboard.
+    - The Settings page is incomplete (i.e. the items do not exist yet).
 
-e. Features / use cases not part of the prototype:
+e. Features / use cases not part of the (alpha) prototype:
+    - Splash screen page. (beta)
+    - Addition of the navigator on the top right corner. (beta)
+    - Creation of the Palette to save colors. (beta)
+    - A save button for the Palette. (beta)
+    - Relocation of the menu to the bottom right corner. (beta)
+    - Front/back camera. (future)
+    - Turn on / off / auto flash. (future)
+    - Adding filters to brighten / darken photos. (future)
 
 f. Classes / major chunks of code obtained:
+	- Camera API:
+	http://developer.android.com/guide/topics/media/camera.html
+	- Find components of color of the bitmap at x, y.: Bitmap << 2D Graphics << Android:  http://www.java2s.com/Code/Android/2D-Graphics/Findcomponentsofcolorofthebitmapatxy.htm
+	- Camera.Parameters used to save picture in correct orientation: http://stackoverflow.com/questions/17782806/camera-app-rotates-images-by-90-degrees
+	- Getting an image from the gallery:  http://stackoverflow.com/questions/2169649/get-pick-an-image-from-androids-built-in-gallery-app-programmatically
+	
 
 g. Classes / major chunks of code completed:
+	- Touch events.
+	- Listeners for the capture and grab photo buttons.
+	- Layouts for main and about_page (xml files) as well as AboutActivity.java for the About page.
+	- main_menu.xml for the menu items.
+	- Settings.java and its implementation.
+	- Additions to strings.xml.
+	- Workspace.java and its associated files for grabbing images and analyzing colors.
