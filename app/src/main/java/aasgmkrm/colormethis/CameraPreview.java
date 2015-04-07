@@ -10,8 +10,9 @@ import android.view.SurfaceView;
 import java.io.IOException;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-    private SurfaceHolder mSurfaceHolder;
+    public SurfaceHolder mSurfaceHolder;
     private Camera mCamera;
+    private boolean isPreviewRunning;
 
     private static final String CAM_PREVIEW_TAG = "CameraPreview";
     private static final String SURFACE_TAG = "Surface";
@@ -21,10 +22,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     // Constructor that obtains context and camera
     public CameraPreview(Context context, Camera camera) {
         super(context);
-        this.mCamera = camera;
+        setMCamera(camera);
         this.mSurfaceHolder = this.getHolder();
         this.mSurfaceHolder.addCallback(this);
-
         this.mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
@@ -32,19 +32,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         try {
             mCamera.setPreviewDisplay(surfaceHolder);
-            mCamera.startPreview();
+            previewStart();
+        } catch (NullPointerException e) {
+            Log.d(SURFACE_TAG, "SurfaceCreated: NPE " + e.getMessage());
         } catch (IOException e) {
-            Log.d(CAM_PREVIEW_TAG, "IOException: " + e.getMessage());
+            Log.d(SURFACE_TAG, "SurfaceCreated: IOE" + e.getMessage());
         }
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        if(mCamera != null){
-
-
-            mCamera.stopPreview();
-            mCamera.setPreviewCallback(null);
+        if(mCamera != null) {
+            previewStop();
             Log.d(CAM_TAG, "Release in surfaceDestroyed");
             mCamera.release();
             mCamera = null;
@@ -55,9 +54,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
-        mCamera.setDisplayOrientation(90);
         try {
             mCamera.setPreviewDisplay(surfaceHolder);
+            mCamera.setDisplayOrientation(90);
 
             /** Camera.Parameters used to save picture in correct orientation:
              *  http://stackoverflow.com/questions/17782806/camera-app-rotates-images-by-90-degrees
@@ -70,8 +69,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.setParameters(params);
 
             mCamera.startPreview();
-        } catch (Exception e) {
-            Log.d(SURFACE_TAG, "Exception: " + e.getMessage());
+        } catch (NullPointerException e) {
+            Log.d(SURFACE_TAG, "SurfaceChanged: NPE " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(SURFACE_TAG, "SurfaceChanged: IOE" + e.getMessage());
         }
     }
 
@@ -79,5 +80,20 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCamera = camera;
         this.mSurfaceHolder = this.getHolder();
         this.mSurfaceHolder.addCallback(this);
+    }
+
+    public void previewStart() {
+        if (!isPreviewRunning && (mCamera != null)) {
+            mCamera.startPreview();
+            isPreviewRunning = true;
+        }
+    }
+
+    public void previewStop () {
+        if (isPreviewRunning && (mCamera != null)) {
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
+            isPreviewRunning = false;
+        }
     }
 }

@@ -3,11 +3,14 @@ package aasgmkrm.colormethis;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -48,6 +51,11 @@ public class ColorMeThis extends Activity implements
     private float x;
     private float y;
 
+    /** Grab photo declarations. */
+    private static final int SELECT_PICTURE = 1;
+    private String selectedImagePath;
+    private Button mGrabPhotoButton;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +73,9 @@ public class ColorMeThis extends Activity implements
 
         mCaptureButton = (Button) findViewById(R.id.button_capture);
         mCaptureButton.setOnClickListener(new CaptureClickListener());
+
+        mGrabPhotoButton = (Button) findViewById(R.id.grab_photo);
+        mGrabPhotoButton.setOnClickListener(new GrabClickListener());
     }
 
     @Override
@@ -132,48 +143,40 @@ public class ColorMeThis extends Activity implements
     }
 
     /** Release the camera in onPause(). */
-
-
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(PIC_TAG, "inside onPause");
 
-        if (mCamera != null) {
-            try{
-                mCamera.stopPreview();
-                mCamera.setPreviewCallback(null);
-                Log.d(PIC_TAG, "release in onPause");
-                mCamera.release();
-                mCamera = null;
-                mCameraPreview.setMCamera(null);
-            }catch(Exception e){}
-        }
+        try{
+            mCameraPreview.previewStop();
+            mCamera.setPreviewCallback(null);
+            Log.d(PIC_TAG, "release in onPause");
+            mCamera.lock();
+            mCamera.release();
+            mCamera = null;
+        } catch(Exception e){}
     }
-
 
     @Override
     protected void onResume()
     {
         super.onResume();
         Log.d(PIC_TAG, "Inside onResume");
-        if(mCamera != null) {
-            try {
-                mCamera.setPreviewCallback(null);
-                mCamera = getCameraInstance();
+        mCamera = getCameraInstance();
+        mCameraPreview.setMCamera(mCamera);
+        try {
+            mCamera.setPreviewCallback(null);
 
-                //mCamera.setPreviewCallback(null);
-                //mCameraPreview = new CameraPreview(this, mCamera);//set preview
-                mCameraPreview.setMCamera(mCamera);
-                //preview.addView(mCameraPreview);
-            } catch (Exception e) {
-                Log.d(TAG, "Error starting camera preview: " + e.getMessage());
-            }
+            //mCamera.setPreviewCallback(null);
+            //mCameraPreview = new CameraPreview(this, mCamera);//set preview
+            //preview.addView(mCameraPreview);
+
+            mCameraPreview.previewStart();
+        } catch (Exception e) {
+            Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -228,11 +231,11 @@ public class ColorMeThis extends Activity implements
     private void releaseCameraAndPreview() {
         if (mCamera != null) {
             Log.d(PIC_TAG, "release in releaseCameraAndPreview");
+            mCamera.lock();
             mCamera.release();
             mCamera = null;
         }
     }
-
 
     private class CaptureClickListener implements View.OnClickListener {
         public void onClick (View view) {
@@ -290,5 +293,37 @@ public class ColorMeThis extends Activity implements
                 + timeStamp + ".jpg");
 
         return mediaFile;
+    }
+
+    private class GrabClickListener implements View.OnClickListener {
+        public void onClick (View view) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Uri selectedImageUri = data.getData();
+                selectedImagePath = getPath(selectedImageUri);
+            }
+        }
+
+    }
+
+    public String getPath(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        if(cursor != null){
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        }
+
+        else
+            return null;
     }
 }
