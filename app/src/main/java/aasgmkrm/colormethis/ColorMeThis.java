@@ -196,7 +196,7 @@ public class ColorMeThis extends Activity implements
                 startActivity(intent);
                 return true;
             case R.id.settings:
-                startActivityForResult(new Intent(this, Settings.class), 0);
+                //startActivityForResult(new Intent(this, Settings.class), 0);
                 return true;
             /**
              case R.id.palette:
@@ -223,7 +223,7 @@ public class ColorMeThis extends Activity implements
         Camera camera = null;
         try {
             releaseCameraAndPreview();
-            camera = Camera.open();
+            camera = Camera.open(0);
         } catch (Exception e) {
             Log.d(TAG, "Camera in use or does not exist: " + e.getMessage());
         }
