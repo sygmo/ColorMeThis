@@ -9,7 +9,7 @@ b. Brief instruction:
 c. Features / use cases completed:
     - Camera opens and closes without crashing.
     - Capturing a photo and saving it to an external directory.
-    - Grabbing pre-existing photos.
+    - Grabbing pre-existing photos (but not analyze them).
 	- The color picker (RGB values only, by clicking).
     - Forced portrait mode, saves picture in portrait mode as well.
     - The menu, located on the action bar in the overflow.
@@ -23,7 +23,9 @@ d. Features / use cases not completed (in alpha):
 	- Color names and hexadecimal when color is picked.
     - The information bar that displays the color and other info.
     - The ability to copy the hexadecimal value to clipboard.
+    - The ability to analyze pre-existing photos.
     - The Settings page is incomplete (i.e. the items do not exist yet).
+    - Support for devices with different screens (if image is too large, app does not work).
 
 e. Features / use cases not part of the (alpha) prototype:
     - Splash screen page. (beta)
@@ -31,7 +33,7 @@ e. Features / use cases not part of the (alpha) prototype:
     - Creation of the Palette to save colors. (beta)
     - A save button for the Palette. (beta)
     - Relocation of the menu to the bottom right corner. (beta)
-    - Front/back camera. (future)
+    - Front/back camera, support for devices with multiple cameras. (beta / future)
     - Turn on / off / auto flash. (future)
     - Adding filters to brighten / darken photos. (future)
 
@@ -41,7 +43,6 @@ f. Classes / major chunks of code obtained:
 	- Find components of color of the bitmap at x, y.: Bitmap << 2D Graphics << Android:  http://www.java2s.com/Code/Android/2D-Graphics/Findcomponentsofcolorofthebitmapatxy.htm
 	- Camera.Parameters used to save picture in correct orientation: http://stackoverflow.com/questions/17782806/camera-app-rotates-images-by-90-degrees
 	- Getting an image from the gallery:  http://stackoverflow.com/questions/2169649/get-pick-an-image-from-androids-built-in-gallery-app-programmatically
-	
 
 g. Classes / major chunks of code completed:
 	- Touch events.

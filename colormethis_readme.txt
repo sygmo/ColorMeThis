@@ -7,3 +7,5 @@ Requirements:
 - Although not necessary for the app as a whole, the app uses and requires the camera permission and camera feature in order to take pictures.  If a device doesn't contain any cameras, only the upload from file feature can be used to analyze pictures.
 - The app requires permission to access the device's built-in gallery to grab photos.
 - The app requires permission to write to external storage in order to save the pictures taken.
+
+The app works well with API level 16 and above.
