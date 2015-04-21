@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -45,7 +47,8 @@ public class ColorMeThis extends Activity implements
     private CameraPreview mCameraPreview;
     private Button mCaptureButton;
     private FrameLayout preview;
-    Bitmap mBitmap;
+    private Bitmap mBitmap;
+    private ImageView mImageView;
 
     // touch coordinates
     private float x;
@@ -72,6 +75,8 @@ public class ColorMeThis extends Activity implements
         mCameraPreview = new CameraPreview(this, mCamera);
         preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mCameraPreview);
+
+        mImageView = (ImageView) findViewById(R.id.photo_selected);
 
         mCaptureButton = (Button) findViewById(R.id.button_capture);
         mCaptureButton.setOnClickListener(new CaptureClickListener());
@@ -207,7 +212,6 @@ public class ColorMeThis extends Activity implements
     }
 
 
-
     /** For SETTINGS: adjustments to be made at a later time.
      *  Files to check: Settings.java, preferences.xml
      *
@@ -269,9 +273,8 @@ public class ColorMeThis extends Activity implements
 
                 // open image view (workspace)
                 Intent intent = new Intent(ColorMeThis.this, Workspace.class);
-                intent.putExtra(WORKSPACE_MESSAGE, pictureFile.getPath().toString());
+                intent.putExtra(WORKSPACE_MESSAGE, pictureFile.getPath());
                 startActivity(intent);
-
 
 
             } catch (FileNotFoundException e) {
@@ -307,33 +310,42 @@ public class ColorMeThis extends Activity implements
 
     private class GrabClickListener implements View.OnClickListener {
         public void onClick (View view) {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, SELECT_PICTURE);
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
-                Uri selectedImageUri = data.getData();
-                selectedImagePath = getPath(selectedImageUri);
+                ColorMeThis activity = ColorMeThis.this;
+                selectedImagePath = getImagePath(data, activity);
+                mBitmap = BitmapFactory.decodeFile(selectedImagePath);
+                mImageView.setImageBitmap(mBitmap);
+
+                if (selectedImagePath != null) {
+                    // open image view (workspace)
+                    Intent intent = new Intent(ColorMeThis.this, Workspace.class);
+                    intent.putExtra(WORKSPACE_MESSAGE, selectedImagePath);
+                    startActivity(intent);
+                }
+
+                else
+                    Log.d(TAG, "The selected image path is NULL.");
             }
         }
 
     }
 
-    public String getPath(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        if(cursor != null){
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        }
-
-        else
-            return null;
+    public static String getImagePath(Intent data, Context context) {
+        Uri selectedImage = data.getData();
+        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String selectedImagePath = cursor.getString(columnIndex);
+        cursor.close();
+        return selectedImagePath;
     }
 }
