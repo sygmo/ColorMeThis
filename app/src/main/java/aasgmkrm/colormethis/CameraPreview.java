@@ -36,7 +36,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (NullPointerException e) {
             Log.d(SURFACE_TAG, "SurfaceCreated: NPE " + e.getMessage());
         } catch (IOException e) {
-            Log.d(SURFACE_TAG, "SurfaceCreated: IOE" + e.getMessage());
+            Log.d(SURFACE_TAG, "SurfaceCreated: IOE " + e.getMessage());
+        } catch (RuntimeException e) {
+            Log.d(SURFACE_TAG, "SurfaceCreated: RTE " + e.getMessage());
         }
     }
 
@@ -72,7 +74,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } catch (NullPointerException e) {
             Log.d(SURFACE_TAG, "SurfaceChanged: NPE " + e.getMessage());
         } catch (IOException e) {
-            Log.d(SURFACE_TAG, "SurfaceChanged: IOE" + e.getMessage());
+            Log.d(SURFACE_TAG, "SurfaceChanged: IOE " + e.getMessage());
+        } catch (RuntimeException e) {
+            Log.d(SURFACE_TAG, "SurfaceChanged: RTE " + e.getMessage());
         }
     }
 

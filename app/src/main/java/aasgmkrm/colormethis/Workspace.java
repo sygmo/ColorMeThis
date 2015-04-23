@@ -110,7 +110,11 @@ public class Workspace extends ActionBarActivity implements
         x = (int) event.getX();
         y = (int) event.getY();
 
-        color = Utils.findColor(myImage, x, y);
+        try {
+            color = Utils.findColor(myImage, x, y);
+        } catch (ArithmeticException e) {
+            Log.d(DEBUG_TAG, "Divide by zero.");
+        }
         Context context = getApplicationContext();
         CharSequence text = "R: " + Color.red(color) + "  G: " + Color.green(color) + "  B: "
                 + Color.blue(color);

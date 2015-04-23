@@ -100,7 +100,7 @@ public class ColorMeThis extends Activity implements
 
     @Override
     public boolean onFling(MotionEvent event1, MotionEvent event2,
-                               float velocityX, float velocityY) {
+                           float velocityX, float velocityY) {
         Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
         return true;
     }
@@ -112,7 +112,7 @@ public class ColorMeThis extends Activity implements
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-                                float distanceY) {
+                            float distanceY) {
         Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
         return true;
     }
@@ -206,7 +206,7 @@ public class ColorMeThis extends Activity implements
             /**
              case R.id.palette:
              return true;
-            */
+             */
         }
         return false;
     }
@@ -217,9 +217,9 @@ public class ColorMeThis extends Activity implements
      *
      @Override
      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-         if (requestCode == RESULT_CANCELED) {
-             ...
-         }
+     if (requestCode == RESULT_CANCELED) {
+     ...
+     }
      }
      */
 
@@ -289,7 +289,7 @@ public class ColorMeThis extends Activity implements
         File mediaStorageDir = new File(
                 Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_PICTURES),
-                        "ColorMeThis");
+                "ColorMeThis");
 
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
@@ -326,6 +326,7 @@ public class ColorMeThis extends Activity implements
 
                 if (selectedImagePath != null) {
                     // open image view (workspace)
+                    mImageView.setImageBitmap(null);
                     Intent intent = new Intent(ColorMeThis.this, Workspace.class);
                     intent.putExtra(WORKSPACE_MESSAGE, selectedImagePath);
                     startActivity(intent);
