@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -45,7 +46,7 @@ public class ColorMeThis extends Activity implements
     /** Camera declarations. */
     private Camera mCamera;
     private CameraPreview mCameraPreview;
-    private Button mCaptureButton;
+    private ImageButton mCaptureButton;
     private FrameLayout preview;
     private Bitmap mBitmap;
     private ImageView mImageView;
@@ -57,7 +58,8 @@ public class ColorMeThis extends Activity implements
     /** Grab photo declarations. */
     private static final int SELECT_PICTURE = 1;
     private String selectedImagePath;
-    private Button mGrabPhotoButton;
+    private ImageView mGrabPhotoView;
+    //private Button mGrabPhotoButton;
 
     public final static String WORKSPACE_MESSAGE = "aasgmkrm.colormethis.MESSAGE";
 
@@ -78,11 +80,18 @@ public class ColorMeThis extends Activity implements
 
         mImageView = (ImageView) findViewById(R.id.photo_selected);
 
-        mCaptureButton = (Button) findViewById(R.id.button_capture);
+        mCaptureButton = (ImageButton) findViewById(R.id.button_capture);
         mCaptureButton.setOnClickListener(new CaptureClickListener());
 
-        mGrabPhotoButton = (Button) findViewById(R.id.grab_photo);
-        mGrabPhotoButton.setOnClickListener(new GrabClickListener());
+        mGrabPhotoView = (ImageView) findViewById(R.id.grab_photo);
+
+        setGrabPhotoImage();
+        mGrabPhotoView.setOnClickListener(new GrabClickListener());
+
+
+
+        //mGrabPhotoButton = (Button) findViewById(R.id.grab_photo);
+        //mGrabPhotoButton.setOnClickListener(new GrabClickListener());
     }
 
     @Override
@@ -223,6 +232,34 @@ public class ColorMeThis extends Activity implements
      }
      */
 
+    private void setGrabPhotoImage(){
+
+        String[] projection = new String[]{
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATE_TAKEN,
+                MediaStore.Images.ImageColumns.MIME_TYPE
+        };
+
+        final Cursor cursor = getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                        null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+        if (cursor.moveToFirst()) {
+
+            String imageLocation = cursor.getString(1);
+            File imageFile = new File(imageLocation);
+            if (imageFile.exists()) {   // TODO: is there a better way to do this?
+                Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                mGrabPhotoView.setImageBitmap(bm);
+            }
+        }
+
+
+    }
+
+
     private Camera getCameraInstance() {
         Camera camera = null;
         try {
@@ -261,13 +298,14 @@ public class ColorMeThis extends Activity implements
                 fos.write(data);
                 fos.close();
 
+                /*
                 Context context = getApplicationContext();
                 CharSequence text = "Photo saved to " + pictureFile.getPath();
                 int duration = Toast.LENGTH_SHORT;
                 Log.d(PIC_TAG, pictureFile.getPath());
 
                 Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                toast.show();*/
 
                 mCamera.startPreview();
 
