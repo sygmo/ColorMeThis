@@ -12,4 +12,64 @@
         android:layout_gravity="center_horizontal"/>
 
 
+    <!-- Color toolbox -->
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="90dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/rounder_corner"
+        android:layout_above="@id/camera_menu_wrapper"
+        android:layout_marginBottom="20dp">
+
+        <RelativeLayout
+            android:id="@+id/color_display_box"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/color_displayer">
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <!-- End of color toolbox-->
+
+
+    <!-- Bottom menu -->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:id="@+id/camera_menu_wrapper"
+        android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#000000"
+            android:alpha=".7">
+
+        </RelativeLayout>
+
+        <ImageButton
+            android:id="@+id/button_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/take_photo_btn"
+            android:background="@null"/>
+
+        <ImageView
+            android:id="@+id/grab_photo"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"></ImageView>
+    </RelativeLayout>
+    <!-- end of bottom menu -->
+
+
 </RelativeLayout>
