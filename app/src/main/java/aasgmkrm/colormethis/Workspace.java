@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.FloatMath;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -51,17 +53,85 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.workspace);
 
+
+
+
+        // old code
         Intent intent = getIntent();
         String message = intent.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
 
+        // old code
         File imgFile = new File(message);
+
+
+
+        // old code
         if(imgFile.exists()) {
 
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            // get size of display
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int reqWidth = size.x;
+            int reqHeight = size.y;
+
+            // new code
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
+            //int imageHeight = options.outHeight;
+            //int imageWidth = options.outWidth;
+            String imageType = options.outMimeType;
+
+            Bitmap myBitmap = decodeSampledBitmapFromResource(imgFile, reqWidth, reqHeight);
+            //Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             myImage = (ImageView) findViewById(R.id.selection);
+            Log.d(TAG, "SIZE OF IMAGE: " + myBitmap.getWidth() + " x " + myBitmap.getHeight());
             myImage.setImageBitmap(myBitmap);
             myImage.setOnTouchListener(this);
         }
+    }
+
+
+    // new code
+    public static Bitmap decodeSampledBitmapFromResource(File imgFile,
+                                                         int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
+    }
+
+    // new code
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
     /** MotionEvent: Zoom and Scroll
@@ -208,4 +278,5 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         sb.append("]");
         Log.d(TAG, sb.toString());
     }
+
 }
