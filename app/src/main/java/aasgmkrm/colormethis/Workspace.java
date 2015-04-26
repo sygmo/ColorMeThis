@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.FloatMath;
@@ -48,6 +49,9 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     PointF mid = new PointF();
     float oldDist = 1f;
 
+
+    GradientDrawable colorDisplayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +59,10 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
+
+
+        colorDisplayer = (GradientDrawable) findViewById(R.id.color_display_box).getBackground();
+
 
         File imgFile = new File(message);
         if(imgFile.exists()) {
@@ -82,6 +90,13 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             myImage.setOnTouchListener(this);
         }
     }
+
+
+    private void setColorDisplayer(int color){
+        colorDisplayer.setColor(color);
+    }
+
+
 
     // new code
     public static Bitmap decodeSampledBitmapFromResource(File imgFile,
@@ -156,6 +171,8 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 } catch (ArithmeticException e) {
                     Log.d(TAG, "Divide by zero.");
                 }
+
+                setColorDisplayer(color);
 
 /*              Context context = getApplicationContext();
                 CharSequence text = "R: " + Color.red(color) + "  G: " + Color.green(color) + "  B: "
