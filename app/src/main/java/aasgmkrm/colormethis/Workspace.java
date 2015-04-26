@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -165,12 +167,32 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             case MotionEvent.ACTION_UP: // first finger lifted
                 x = (int) event.getX();
                 y = (int) event.getY();
+                float[] xy = new float[] {x, y};
 
-                try {
+                Matrix invertMatrix = new Matrix();
+                myImage.getImageMatrix().invert(invertMatrix);
+
+                invertMatrix.mapPoints(xy);
+                int ex = Integer.valueOf((int)xy[0]);
+                int ey = Integer.valueOf((int)xy[1]);
+
+                Drawable imgDrawable = myImage.getDrawable();
+                Bitmap bm = ((BitmapDrawable)imgDrawable).getBitmap();
+
+                if (ex < 0)
+                    ex = 0;
+                else if (ex > bm.getWidth()-1) ex = bm.getWidth()-1;
+
+                if (ey < 0) ey = 0;
+                else if (ey > bm.getHeight()-1) ey = bm.getHeight()-1;
+
+                int color = bm.getPixel(ex, ey);
+
+/*                try {
                     color = Utils.findColor(myImage, x, y);
                 } catch (ArithmeticException e) {
                     Log.d(TAG, "Divide by zero.");
-                }
+                }*/
 
                 setColorDisplayer(color);
 

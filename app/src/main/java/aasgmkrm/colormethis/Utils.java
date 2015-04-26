@@ -20,14 +20,9 @@
 //package com.nauj27.android.colorpicker;
 package aasgmkrm.colormethis;
 
-import java.util.Iterator;
-import java.util.List;
-
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Camera;
-import android.hardware.Camera.Size;
 import android.view.View;
 import android.widget.ImageView;
 

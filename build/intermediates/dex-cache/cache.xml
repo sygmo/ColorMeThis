@@ -2,32 +2,32 @@
 <items version="2" >
 
     <item
-        jar="/Users/andres/Documents/Code/Android Studio Projects/ColorMeThis/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="/Users/andres/Documents/Code/Android Studio Projects/ColorMeThis/app/build/intermediates/pre-dexed/debug/classes-cd15aeb6b0deef2ef811c8f8f1aa0bb13db0c4b6.jar" />
-    </item>
-    <item
-        jar="/Users/andres/Documents/Code/Android Studio Projects/ColorMeThis/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
-        <dex dex="/Users/andres/Documents/Code/Android Studio Projects/ColorMeThis/app/build/intermediates/pre-dexed/debug/classes-81cd37c5acbed02751e7c4a28c0696545132f857.jar" />
-    </item>
-    <item
-        jar="/Users/andres/Documents/Code/Android Studio Projects/ColorMeThis/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex dex="/Users/andres/Documents/Code/Android Studio Projects/ColorMeThis/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-140c2350e0e3d8dc31e26f88b3e8d5f8b6c3174e.jar" />
-    </item>
-    <item
-        jar="/Applications/adt-bundle-mac-x86_64-20140702/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jar="C:\Users\Kevin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex dex="/Users/andres/Documents/Code/Android Studio Projects/ColorMeThis/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-6658c117293958a7383bcbb346a57fefebf27ee4.jar" />
+        <dex dex="C:\Users\Kevin\AndroidStudioProjects\ColorMeThis\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-5580805ba7594e0a0c8a7b42874207aa019e2684.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kevin\AndroidStudioProjects\ColorMeThis\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="C:\Users\Kevin\AndroidStudioProjects\ColorMeThis\app\build\intermediates\pre-dexed\debug\classes-dea29cb8eda02bfe5e72f58086a9cff4429d9a9a.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kevin\AndroidStudioProjects\ColorMeThis\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="C:\Users\Kevin\AndroidStudioProjects\ColorMeThis\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-87ed0184217cd01e17bc9b87259b9a621e8083c8.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kevin\AndroidStudioProjects\ColorMeThis\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="C:\Users\Kevin\AndroidStudioProjects\ColorMeThis\app\build\intermediates\pre-dexed\debug\classes-7d1a569f82987d1bb7c58b8e234c8326ac710978.jar" />
     </item>
 
 </items>
