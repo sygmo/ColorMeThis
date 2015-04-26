@@ -7,11 +7,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -33,10 +35,14 @@ public class Workspace extends ActionBarActivity implements
     private int y;
     private int color;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.workspace);
+
 
 
         // Instantiate gesture detector
@@ -46,11 +52,13 @@ public class Workspace extends ActionBarActivity implements
         Intent intent = getIntent();
         String message = intent.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
 
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
 
-        Toast toast = Toast.makeText(context, message, duration);
-        toast.show();
+
+
+
+
+
+
 
         File imgFile = new File(message);
         if(imgFile.exists()) {
