@@ -31,7 +31,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     private int color;
 
     @SuppressWarnings("unused")
-    private static final float MIN_ZOOM = 1.0f, MAX_ZOOM = 5.0f;
+    private static final float MIN_ZOOM = 0.5f, MAX_ZOOM = 2.5f;
 
     // These matrices will be used to scale points of the image
     Matrix matrix = new Matrix();
@@ -53,19 +53,10 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.workspace);
 
-
-
-
-        // old code
         Intent intent = getIntent();
         String message = intent.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
 
-        // old code
         File imgFile = new File(message);
-
-
-
-        // old code
         if(imgFile.exists()) {
 
             // get size of display
@@ -81,7 +72,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
             //int imageHeight = options.outHeight;
             //int imageWidth = options.outWidth;
-            String imageType = options.outMimeType;
+            // String imageType = options.outMimeType;
 
             Bitmap myBitmap = decodeSampledBitmapFromResource(imgFile, reqWidth, reqHeight);
             //Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
@@ -91,7 +82,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             myImage.setOnTouchListener(this);
         }
     }
-
 
     // new code
     public static Bitmap decodeSampledBitmapFromResource(File imgFile,
@@ -134,6 +124,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         return inSampleSize;
     }
 
+
     /** MotionEvent: Zoom and Scroll
      *  Source:
      *  http://stackoverflow.com/questions/6650398/android-imageview-zoom-in-and-zoom-out
@@ -165,7 +156,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 } catch (ArithmeticException e) {
                     Log.d(TAG, "Divide by zero.");
                 }
-                
+
 /*              Context context = getApplicationContext();
                 CharSequence text = "R: " + Color.red(color) + "  G: " + Color.green(color) + "  B: "
                         + Color.blue(color);
@@ -203,17 +194,38 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 }
 
                 else if (mode == ZOOM) {
+                    float[] f = new float[9];
+
                     // pinch zooming
                     float newDist = spacing(event);
                     Log.d(TAG, "newDist=" + newDist);
 
-                    if (newDist > 5f) {
+                    if (newDist > 10f) {
                         matrix.set(savedMatrix);
                         scale = newDist / oldDist; // setting the scaling of the
+
                         // matrix...if scale > 1 means
                         // zoom in...if scale < 1 means
                         // zoom out
+
                         matrix.postScale(scale, scale, mid.x, mid.y);
+                    }
+
+                    /** Max and min zoom
+                     *  Source:
+                     *  http://stackoverflow.com/questions/3881187/
+                     *  imageview-pinch-zoom-scale-limits-and-pan-bounds */
+
+                    matrix.getValues(f);
+                    float scaleX = f[Matrix.MSCALE_X];
+                    float scaleY = f[Matrix.MSCALE_Y];
+
+                    if (scaleX <= MIN_ZOOM) {
+                        matrix.postScale((MIN_ZOOM) / scaleX, (MIN_ZOOM) / scaleY, mid.x, mid.y);
+                    }
+
+                    else if (scaleX >= 2.5f) {
+                        matrix.postScale((MAX_ZOOM) / scaleX, (MAX_ZOOM) / scaleY, mid.x, mid.y);
                     }
                 }
 
@@ -278,5 +290,4 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         sb.append("]");
         Log.d(TAG, sb.toString());
     }
-
 }
