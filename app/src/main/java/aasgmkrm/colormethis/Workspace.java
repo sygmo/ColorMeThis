@@ -1,156 +1,211 @@
 package aasgmkrm.colormethis;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.os.Bundle;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.FloatMath;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.File;
 
 /**
  * Created by smercier91 on 4/6/15.
  */
-public class Workspace extends ActionBarActivity implements
-        GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener{
+public class Workspace extends ActionBarActivity implements View.OnTouchListener {
 
     ImageView myImage;
-    private GestureDetectorCompat mDetector;
-
-    private static final String DEBUG_TAG = "Gestures";
+    private static final String TAG = "Gestures";
 
     // touch coordinates
     private int x;
     private int y;
     private int color;
 
+    @SuppressWarnings("unused")
+    private static final float MIN_ZOOM = 1.0f, MAX_ZOOM = 5.0f;
 
+    // These matrices will be used to scale points of the image
+    Matrix matrix = new Matrix();
+    Matrix savedMatrix = new Matrix(); // also the min matrix
 
+    // The 3 states (events) which the user is trying to perform
+    static final int NONE = 0;
+    static final int DRAG = 1;
+    static final int ZOOM = 2;
+    int mode = NONE;
+
+    // these PointF objects are used to record the point(s) the user is touching
+    PointF start = new PointF();
+    PointF mid = new PointF();
+    float oldDist = 1f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.workspace);
 
-
-
-        // Instantiate gesture detector
-        mDetector = new GestureDetectorCompat(this, this);
-        mDetector.setOnDoubleTapListener(this);
-
         Intent intent = getIntent();
         String message = intent.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
-
-
-
-
-
-
-
-
 
         File imgFile = new File(message);
         if(imgFile.exists()) {
 
-            //Toast toast2 = Toast.makeText(context, "SUCCESS!", duration);
-            //toast2.show();
-
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             myImage = (ImageView) findViewById(R.id.selection);
             myImage.setImageBitmap(myBitmap);
+            myImage.setOnTouchListener(this);
+        }
+    }
+
+    /** MotionEvent: Zoom and Scroll
+     *  Source:
+     *  http://stackoverflow.com/questions/6650398/android-imageview-zoom-in-and-zoom-out
+     */
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        ImageView view = (ImageView) v;
+        view.setScaleType(ImageView.ScaleType.MATRIX);
+        float scale;
+        dumpEvent(event);
+        // Handle touch events here...
+
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
+            case MotionEvent.ACTION_DOWN:   // first finger down only
+                matrix.set(view.getImageMatrix());
+                savedMatrix.set(matrix);
+                start.set(event.getX(), event.getY());
+                Log.d(TAG, "mode=DRAG"); // write to LogCat
+                mode = DRAG;
+                break;
+
+            case MotionEvent.ACTION_UP: // first finger lifted
+                x = (int) event.getX();
+                y = (int) event.getY();
+
+                try {
+                    color = Utils.findColor(myImage, x, y);
+                } catch (ArithmeticException e) {
+                    Log.d(TAG, "Divide by zero.");
+                }
+                
+/*              Context context = getApplicationContext();
+                CharSequence text = "R: " + Color.red(color) + "  G: " + Color.green(color) + "  B: "
+                        + Color.blue(color);
+                int duration = Toast.LENGTH_LONG;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();*/
+
+                Log.d(TAG, "x: " + x + ", y: " + y + ", onSingleTapUp: " + event.toString());
+                break;
+
+            case MotionEvent.ACTION_POINTER_UP: // second finger lifted
+                mode = NONE;
+                Log.d(TAG, "mode=NONE");
+                break;
+
+            case MotionEvent.ACTION_POINTER_DOWN: // first and second finger down
+                oldDist = spacing(event);
+                Log.d(TAG, "oldDist=" + oldDist);
+
+                if (oldDist > 5f) {
+                    savedMatrix.set(matrix);
+                    midPoint(mid, event);
+                    mode = ZOOM;
+                    Log.d(TAG, "mode=ZOOM");
+                }
+
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+
+                if (mode == DRAG){
+                    matrix.set(savedMatrix);
+                    // create the transformation in the matrix  of points
+                    matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
+                }
+
+                else if (mode == ZOOM) {
+                    // pinch zooming
+                    float newDist = spacing(event);
+                    Log.d(TAG, "newDist=" + newDist);
+
+                    if (newDist > 5f) {
+                        matrix.set(savedMatrix);
+                        scale = newDist / oldDist; // setting the scaling of the
+                        // matrix...if scale > 1 means
+                        // zoom in...if scale < 1 means
+                        // zoom out
+                        matrix.postScale(scale, scale, mid.x, mid.y);
+                    }
+                }
+
+                break;
         }
 
-        //ImageView jpgView = (ImageView)findViewById(R.id.workspace);
-        //Bitmap bitmap = BitmapFactory.decodeFile(message);
-        //jpgView.setImageBitmap(bitmap);
+        view.setImageMatrix(matrix); // display the transformation on screen
+        return true; // indicate event was handled
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        this.mDetector.onTouchEvent(event);
-        // Be sure to call the superclass implementation
-        return super.onTouchEvent(event);
+    /*
+     * --------------------------------------------------------------------------
+     * Method: spacing Parameters: MotionEvent Returns: float Description:
+     * checks the spacing between the two fingers on touch
+     * ----------------------------------------------------
+     */
+
+    private float spacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return FloatMath.sqrt(x * x + y * y);
     }
 
-    @Override
-    public boolean onDown(MotionEvent event) {
-        Log.d(DEBUG_TAG,"onDown: " + event.toString());
-        return true;
+    /*
+     * --------------------------------------------------------------------------
+     * Method: midPoint Parameters: PointF object, MotionEvent Returns: void
+     * Description: calculates the midpoint between the two fingers
+     * ------------------------------------------------------------
+     */
+
+    private void midPoint(PointF point, MotionEvent event) {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
     }
 
-    @Override
-    public boolean onFling(MotionEvent event1, MotionEvent event2,
-                           float velocityX, float velocityY) {
-        Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
-        return true;
-    }
+    /** Show an event in the LogCat view, for debugging */
+    private void dumpEvent(MotionEvent event) {
+        String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE","POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?" };
+        StringBuilder sb = new StringBuilder();
+        int action = event.getAction();
+        int actionCode = action & MotionEvent.ACTION_MASK;
+        sb.append("event ACTION_").append(names[actionCode]);
 
-    @Override
-    public void onLongPress(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-                            float distanceY) {
-        Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
-        return true;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent event) {
-        x = (int) event.getX();
-        y = (int) event.getY();
-
-        try {
-            color = Utils.findColor(myImage, x, y);
-        } catch (ArithmeticException e) {
-            Log.d(DEBUG_TAG, "Divide by zero.");
+        if (actionCode == MotionEvent.ACTION_POINTER_DOWN || actionCode == MotionEvent.ACTION_POINTER_UP)
+        {
+            sb.append("(pid ").append(action >> MotionEvent.ACTION_POINTER_ID_SHIFT);
+            sb.append(")");
         }
-        Context context = getApplicationContext();
-        CharSequence text = "R: " + Color.red(color) + "  G: " + Color.green(color) + "  B: "
-                + Color.blue(color);
-        int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
 
-        Log.d(DEBUG_TAG, "x: " + x + ", y: " + y + ", onSingleTapUp: " + event.toString());
-        return true;
+        sb.append("[");
+        for (int i = 0; i < event.getPointerCount(); i++)
+        {
+            sb.append("#").append(i);
+            sb.append("(pid ").append(event.getPointerId(i));
+            sb.append(")=").append((int) event.getX(i));
+            sb.append(",").append((int) event.getY(i));
+            if (i + 1 < event.getPointerCount())
+                sb.append(";");
+        }
+
+        sb.append("]");
+        Log.d(TAG, sb.toString());
     }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
-        return true;
-    }
-
-
 }

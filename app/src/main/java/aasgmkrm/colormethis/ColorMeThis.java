@@ -1,7 +1,10 @@
 package aasgmkrm.colormethis;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,11 +23,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,6 +62,7 @@ public class ColorMeThis extends Activity implements
     private ImageView mGrabPhotoView;
     //private Button mGrabPhotoButton;
 
+    private final int DIALOG_QUIT_ID = 0;
     public final static String WORKSPACE_MESSAGE = "aasgmkrm.colormethis.MESSAGE";
 
     /** Called when the activity is first created. */
@@ -220,6 +222,35 @@ public class ColorMeThis extends Activity implements
         return false;
     }
 
+    @Override
+    public void onBackPressed() {
+        showDialog(DIALOG_QUIT_ID);
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog = null;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        if (id == DIALOG_QUIT_ID)
+            dialog = this.createQuitDialog(builder);
+
+        if (dialog == null)
+            Log.d(TAG, "Dialog is null.");
+
+        return dialog;
+    }
+
+    public Dialog createQuitDialog(AlertDialog.Builder builder) {
+        builder.setMessage(R.string.quit_question).setCancelable(false)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ColorMeThis.this.finish();
+                    }
+                })
+                .setNegativeButton(R.string.no, null);
+        return builder.create();
+    }
 
     /** For SETTINGS: adjustments to be made at a later time.
      *  Files to check: Settings.java, preferences.xml

@@ -27,4 +27,9 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_workspace_drawer">WorkspaceDrawer</string>
+
+    <string name="quit_question">Would you like to quit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
 </resources>
