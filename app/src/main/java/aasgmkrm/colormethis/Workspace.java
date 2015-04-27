@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -31,10 +33,9 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     // touch coordinates
     private int x;
     private int y;
-    private int color;
 
     @SuppressWarnings("unused")
-    private static final float MIN_ZOOM = 0.5f, MAX_ZOOM = 2.5f;
+    private static final float MIN_ZOOM = 0.4f, MAX_ZOOM = 2.0f;
 
     // These matrices will be used to scale points of the image
     Matrix matrix = new Matrix();
@@ -51,20 +52,31 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     PointF mid = new PointF();
     float oldDist = 1f;
 
+    // Widths and heights
+    int bitmapWidth;
+    int bitmapHeight;
+    int reqWidth;
+    int reqHeight;
+
+    private float density;
+    RectF displayRect = new RectF();
 
     GradientDrawable colorDisplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Hide the action bar.
+        supportRequestWindowFeature(Window.FEATURE_ACTION_BAR);
+        getSupportActionBar().hide();
+
         setContentView(R.layout.workspace);
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
 
-
         colorDisplayer = (GradientDrawable) findViewById(R.id.color_display_box).getBackground();
-
 
         File imgFile = new File(message);
         if(imgFile.exists()) {
@@ -73,8 +85,8 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
-            int reqWidth = size.x;
-            int reqHeight = size.y;
+            reqWidth = size.x;
+            reqHeight = size.y;
 
             // new code
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -87,7 +99,12 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             Bitmap myBitmap = decodeSampledBitmapFromResource(imgFile, reqWidth, reqHeight);
             //Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             myImage = (ImageView) findViewById(R.id.selection);
-            Log.d(TAG, "SIZE OF IMAGE: " + myBitmap.getWidth() + " x " + myBitmap.getHeight());
+
+            // Used for scroll limit
+            bitmapWidth = myBitmap.getWidth();
+            bitmapHeight = myBitmap.getHeight();
+
+            Log.d(TAG, "SIZE OF IMAGE: " + bitmapWidth + " x " + bitmapHeight);
             myImage.setImageBitmap(myBitmap);
             myImage.setOnTouchListener(this);
         }
@@ -141,7 +158,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         return inSampleSize;
     }
 
-
     /** MotionEvent: Zoom and Scroll
      *  Source:
      *  http://stackoverflow.com/questions/6650398/android-imageview-zoom-in-and-zoom-out
@@ -152,6 +168,17 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         view.setScaleType(ImageView.ScaleType.MATRIX);
         float scale;
         dumpEvent(event);
+
+        density = getResources().getDisplayMetrics().density;
+
+        float dx; // postTranslate X distance
+        float dy; // postTranslate Y distance
+        float[] matrixValues = new float[9];
+        float matrixX = 0; // X coordinate of matrix inside the ImageView
+        float matrixY = 0; // Y coordinate of matrix inside the ImageView
+        float width = 0; // width of drawable
+        float height = 0; // height of drawable
+
         // Handle touch events here...
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
@@ -162,31 +189,14 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 start.set(event.getX(), event.getY());
                 Log.d(TAG, "mode=DRAG"); // write to LogCat
                 mode = DRAG;
+
                 break;
 
             case MotionEvent.ACTION_UP: // first finger lifted
                 x = (int) event.getX();
                 y = (int) event.getY();
-                float[] xy = new float[] {x, y};
 
-                Matrix invertMatrix = new Matrix();
-                myImage.getImageMatrix().invert(invertMatrix);
-
-                invertMatrix.mapPoints(xy);
-                int ex = Integer.valueOf((int)xy[0]);
-                int ey = Integer.valueOf((int)xy[1]);
-
-                Drawable imgDrawable = myImage.getDrawable();
-                Bitmap bm = ((BitmapDrawable)imgDrawable).getBitmap();
-
-                if (ex < 0)
-                    ex = 0;
-                else if (ex > bm.getWidth()-1) ex = bm.getWidth()-1;
-
-                if (ey < 0) ey = 0;
-                else if (ey > bm.getHeight()-1) ey = bm.getHeight()-1;
-
-                int color = bm.getPixel(ex, ey);
+                int color = getColor(x, y);
 
 /*                try {
                     color = Utils.findColor(myImage, x, y);
@@ -226,6 +236,10 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
             case MotionEvent.ACTION_MOVE:
 
+                /** Restricting panning and zooming
+                 *  Source:
+                 *  http://stackoverflow.com/questions/5385071/restricting-panning-and-zooming
+                 *  */
                 if (mode == DRAG){
                     matrix.set(savedMatrix);
                     // create the transformation in the matrix  of points
@@ -233,8 +247,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 }
 
                 else if (mode == ZOOM) {
-                    float[] f = new float[9];
-
                     // pinch zooming
                     float newDist = spacing(event);
                     Log.d(TAG, "newDist=" + newDist);
@@ -247,30 +259,28 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                         // zoom in...if scale < 1 means
                         // zoom out
 
+                        float[] f = new float[9];
+                        matrix.getValues(f);
+                        float currentScale = f[Matrix.MSCALE_X];
+                        displayRect.set(0, 0, reqWidth, reqHeight);
+                        float minZoom = Math.min(displayRect.width() / bitmapWidth,
+                                displayRect.height() / bitmapHeight);
+                        float maxZoom = MAX_ZOOM * density;
+
+                        if (scale * currentScale > maxZoom)
+                            scale = maxZoom / currentScale;
+
+                        else if (scale * currentScale < minZoom)
+                            scale = minZoom / currentScale;
+
+                        adjustPan();
                         matrix.postScale(scale, scale, mid.x, mid.y);
                     }
-
-                    /** Max and min zoom
-                     *  Source:
-                     *  http://stackoverflow.com/questions/3881187/
-                     *  imageview-pinch-zoom-scale-limits-and-pan-bounds */
-
-                    matrix.getValues(f);
-                    float scaleX = f[Matrix.MSCALE_X];
-                    float scaleY = f[Matrix.MSCALE_Y];
-
-                    if (scaleX <= MIN_ZOOM) {
-                        matrix.postScale((MIN_ZOOM) / scaleX, (MIN_ZOOM) / scaleY, mid.x, mid.y);
-                    }
-
-                    else if (scaleX >= 2.5f) {
-                        matrix.postScale((MAX_ZOOM) / scaleX, (MAX_ZOOM) / scaleY, mid.x, mid.y);
-                    }
                 }
-
                 break;
         }
 
+        adjustPan();
         view.setImageMatrix(matrix); // display the transformation on screen
         return true; // indicate event was handled
     }
@@ -328,5 +338,71 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         sb.append("]");
         Log.d(TAG, sb.toString());
+    }
+
+    private int getColor(int x, int y) {
+        float[] xy = new float[] {x, y};
+
+        Matrix invertMatrix = new Matrix();
+        myImage.getImageMatrix().invert(invertMatrix);
+
+        invertMatrix.mapPoints(xy);
+        int ex = Integer.valueOf((int)xy[0]);
+        int ey = Integer.valueOf((int)xy[1]);
+
+        Drawable imgDrawable = myImage.getDrawable();
+        Bitmap bm = ((BitmapDrawable)imgDrawable).getBitmap();
+
+        if (ex < 0)
+            ex = 0;
+        else if (ex > bm.getWidth()-1) ex = bm.getWidth()-1;
+
+        if (ey < 0) ey = 0;
+        else if (ey > bm.getHeight()-1) ey = bm.getHeight()-1;
+
+        int color = bm.getPixel(ex, ey);
+        return color;
+    }
+
+    private void adjustPan() {
+        displayRect.set(0, 0, reqWidth, reqHeight);
+        float[] matrixValues = new float[9];
+        matrix.getValues(matrixValues);
+        float currentY = matrixValues[Matrix.MTRANS_Y];
+        float currentX = matrixValues[Matrix.MTRANS_X];
+        float currentScale = matrixValues[Matrix.MSCALE_X];
+        float currentHeight = bitmapHeight * currentScale;
+        float currentWidth =  bitmapWidth * currentScale;
+        float newX = currentX;
+        float newY = currentY;
+
+        RectF drawingRect = new RectF(newX, newY, newX + currentWidth,
+                newY + currentHeight);
+        float diffUp = Math.min(displayRect.bottom - drawingRect.bottom,
+                displayRect.top - drawingRect.top);
+        float diffDown = Math.max(displayRect.bottom - drawingRect.bottom,
+                displayRect.top - drawingRect.top);
+        float diffLeft = Math.min(displayRect.left - drawingRect.left,
+                displayRect.right - drawingRect.right);
+        float diffRight = Math.max(displayRect.left - drawingRect.left,
+                displayRect.right - drawingRect.right);
+
+        float x = 0, y = 0;
+
+        if (diffUp > 0)
+            y += diffUp;
+        if (diffDown < 0)
+            y += diffDown;
+        if (diffLeft > 0)
+            x += diffLeft;
+        if (diffRight < 0)
+            x += diffRight;
+
+        if(currentWidth < displayRect.width())
+            x = -currentX + (displayRect.width() - currentWidth) / 2;
+        if(currentHeight<displayRect.height())
+            y = -currentY + (displayRect.height() - currentHeight) / 2;
+
+        matrix.postTranslate(x, y);
     }
 }

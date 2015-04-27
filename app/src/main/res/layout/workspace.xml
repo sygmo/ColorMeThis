@@ -9,8 +9,7 @@
         android:id="@+id/selection"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_gravity="center_horizontal"
-        android:adjustViewBounds="true"/>
+        android:layout_gravity="center_horizontal"/>
 
 
     <!-- Color toolbox -->
