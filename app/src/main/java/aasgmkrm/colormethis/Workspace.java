@@ -21,6 +21,7 @@ import android.view.Window;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by smercier91 on 4/6/15.
@@ -75,6 +76,21 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
+
+        MySQLiteHelper db = new MySQLiteHelper(this);
+
+        /** Testing database */
+        db.addPaletteColor(new PaletteColor(23, "red", "red rgb", "#FF0000"));
+        db.addPaletteColor(new PaletteColor(24, "green", "green rgb", "#00FF00"));
+        db.addPaletteColor(new PaletteColor(25, "blue", "blue rgb", "#0000FF"));
+
+        List<PaletteColor> list = db.getAllPaletteColors();
+
+        db.deletePaletteColor(list.get(0));
+
+        db.getAllPaletteColors();
+
+        /** End testing database */
 
         colorDisplayer = (GradientDrawable) findViewById(R.id.color_display_box).getBackground();
 
@@ -202,7 +218,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
                 int color = getColor(x, y);
 
-/*                try {
+/*               try {
                     color = Utils.findColor(myImage, x, y);
                 } catch (ArithmeticException e) {
                     Log.d(TAG, "Divide by zero.");
@@ -248,10 +264,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                     matrix.set(savedMatrix);
                     // create the transformation in the matrix  of points
                     matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
-
-                    /** Detect the center of the image.
-                    int color = getColor(reqWidth / 2, reqHeight / 2);
-                    setColorDisplayer(color); */
                 }
 
                 else if (mode == ZOOM) {
