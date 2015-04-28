@@ -111,6 +111,21 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     }
 
 
+    // Immersive full-screen mode: for API level 19 and above.
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            myImage.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
+    }
+
+
     private void setColorDisplayer(int color){
         colorDisplayer.setColor(color);
     }
@@ -166,20 +181,9 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     public boolean onTouch(View v, MotionEvent event) {
         ImageView view = (ImageView) v;
         view.setScaleType(ImageView.ScaleType.MATRIX);
+        density = getResources().getDisplayMetrics().density;
         float scale;
         dumpEvent(event);
-
-        density = getResources().getDisplayMetrics().density;
-
-        float dx; // postTranslate X distance
-        float dy; // postTranslate Y distance
-        float[] matrixValues = new float[9];
-        float matrixX = 0; // X coordinate of matrix inside the ImageView
-        float matrixY = 0; // Y coordinate of matrix inside the ImageView
-        float width = 0; // width of drawable
-        float height = 0; // height of drawable
-
-        // Handle touch events here...
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
@@ -244,6 +248,10 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                     matrix.set(savedMatrix);
                     // create the transformation in the matrix  of points
                     matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
+
+                    /** Detect the center of the image.
+                    int color = getColor(reqWidth / 2, reqHeight / 2);
+                    setColorDisplayer(color); */
                 }
 
                 else if (mode == ZOOM) {

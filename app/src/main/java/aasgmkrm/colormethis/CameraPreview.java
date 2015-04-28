@@ -32,6 +32,19 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         try {
             mCamera.setPreviewDisplay(surfaceHolder);
+
+            mCamera.setDisplayOrientation(90);
+
+            /** Camera.Parameters used to save picture in correct orientation:
+             *  http://stackoverflow.com/questions/17782806/camera-app-rotates-images-by-90-degrees
+             */
+            Camera.Parameters params = mCamera.getParameters();
+            params.set("jpeg-quality", 72);
+            params.set("rotation", 90);
+            params.set("orientation", "portrait");
+            params.setPictureFormat(PixelFormat.JPEG);
+            mCamera.setParameters(params);
+
             previewStart();
         } catch (NullPointerException e) {
             Log.d(SURFACE_TAG, "SurfaceCreated: NPE " + e.getMessage());
@@ -50,26 +63,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.release();
             mCamera = null;
         }
-
-        //mCamera.release();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
         try {
             mCamera.setPreviewDisplay(surfaceHolder);
-            mCamera.setDisplayOrientation(90);
-
-            /** Camera.Parameters used to save picture in correct orientation:
-             *  http://stackoverflow.com/questions/17782806/camera-app-rotates-images-by-90-degrees
-             */
-            Camera.Parameters params = mCamera.getParameters();
-            params.set("jpeg-quality", 72);
-            params.set("rotation", 90);
-            params.set("orientation", "portrait");
-            params.setPictureFormat(PixelFormat.JPEG);
-            mCamera.setParameters(params);
-
             mCamera.startPreview();
         } catch (NullPointerException e) {
             Log.d(SURFACE_TAG, "SurfaceChanged: NPE " + e.getMessage());

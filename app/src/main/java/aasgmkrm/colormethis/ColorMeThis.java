@@ -170,15 +170,12 @@ public class ColorMeThis extends Activity implements
             mCameraPreview.previewStop();
             mCamera.setPreviewCallback(null);
             Log.d(PIC_TAG, "release in onPause");
-            mCamera.lock();
-            mCamera.release();
-            mCamera = null;
+            releaseCameraAndPreview();
         } catch(Exception e){}
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         Log.d(PIC_TAG, "Inside onResume");
         mCamera = getCameraInstance();
@@ -263,8 +260,7 @@ public class ColorMeThis extends Activity implements
      }
      */
 
-    private void setGrabPhotoImage(){
-
+    private void setGrabPhotoImage() {
         String[] projection = new String[]{
                 MediaStore.Images.ImageColumns._ID,
                 MediaStore.Images.ImageColumns.DATA,
@@ -286,10 +282,7 @@ public class ColorMeThis extends Activity implements
                 mGrabPhotoView.setImageBitmap(bm);
             }
         }
-
-
     }
-
 
     private Camera getCameraInstance() {
         Camera camera = null;
@@ -405,13 +398,13 @@ public class ColorMeThis extends Activity implements
                     Log.d(TAG, "The selected image path is NULL.");
             }
         }
-
     }
 
     public static String getImagePath(Intent data, Context context) {
         Uri selectedImage = data.getData();
         String[] filePathColumn = { MediaStore.Images.Media.DATA };
-        Cursor cursor = context.getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+        Cursor cursor = context.getContentResolver()
+                .query(selectedImage,filePathColumn, null, null, null);
         cursor.moveToFirst();
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         String selectedImagePath = cursor.getString(columnIndex);
