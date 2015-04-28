@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.List;
@@ -63,6 +64,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     RectF displayRect = new RectF();
 
     GradientDrawable colorDisplayer;
+    TextView hexDisplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +95,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         /** End testing database */
 
         colorDisplayer = (GradientDrawable) findViewById(R.id.color_display_box).getBackground();
+        hexDisplayer = (TextView) findViewById(R.id.hex_displayer);
 
         File imgFile = new File(message);
         if(imgFile.exists()) {
@@ -143,8 +146,12 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
 
     private void setColorDisplayer(int color){
+        String hexString = String.format("#%06X", (0xFFFFFF & color));
         colorDisplayer.setColor(color);
+        hexDisplayer.setText(hexString);
+        Log.d("ColorHex", hexString);
     }
+
 
 
 

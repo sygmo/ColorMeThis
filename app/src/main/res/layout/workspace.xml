@@ -11,7 +11,6 @@
         android:layout_height="fill_parent"
         android:layout_gravity="center_horizontal"/>
 
-
     <!-- Color toolbox -->
 
     <RelativeLayout
@@ -32,6 +31,61 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="140dp"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="15dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/info_displayer">
+
+            <TextView
+                android:id="@+id/name_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:text="Name: "></TextView>
+
+            <TextView
+                android:id="@+id/color_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="45dp"
+                android:textColor="#FFFFFF"
+                android:singleLine="true"
+                android:text="Kevin"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scrollHorizontally="true" />
+
+            <TextView
+                android:id="@+id/hex_displayer"
+                android:textColor="#FFFFFF"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/color_name"
+                android:singleLine="true">
+
+            </TextView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/hex_displayer"
+                android:textColor="#FFFFFF"
+                android:text="RGB"/>
+
+        </RelativeLayout>
+
+        <ImageButton
+            android:id="@+id/add_to_library"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="220dp"
+            android:src="@drawable/library"
+            android:background="@null"
+            android:scaleType="fitCenter" />
 
     </RelativeLayout>
 
