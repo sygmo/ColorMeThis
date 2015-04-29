@@ -14,9 +14,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Camera mCamera;
     private boolean isPreviewRunning;
 
-    private static final String CAM_PREVIEW_TAG = "CameraPreview";
     private static final String SURFACE_TAG = "Surface";
-
     private static final String CAM_TAG = "CAMERA";
 
     // Constructor that obtains context and camera
@@ -32,7 +30,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         try {
             mCamera.setPreviewDisplay(surfaceHolder);
-
             mCamera.setDisplayOrientation(90);
 
             /** Camera.Parameters used to save picture in correct orientation:

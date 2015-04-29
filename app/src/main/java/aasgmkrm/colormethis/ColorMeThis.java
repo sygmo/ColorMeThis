@@ -60,7 +60,6 @@ public class ColorMeThis extends Activity implements
     private static final int SELECT_PICTURE = 1;
     private String selectedImagePath;
     private ImageView mGrabPhotoView;
-    //private Button mGrabPhotoButton;
 
     private final int DIALOG_QUIT_ID = 0;
     public final static String WORKSPACE_MESSAGE = "aasgmkrm.colormethis.MESSAGE";
@@ -89,11 +88,6 @@ public class ColorMeThis extends Activity implements
 
         setGrabPhotoImage();
         mGrabPhotoView.setOnClickListener(new GrabClickListener());
-
-
-
-        //mGrabPhotoButton = (Button) findViewById(R.id.grab_photo);
-        //mGrabPhotoButton.setOnClickListener(new GrabClickListener());
     }
 
     @Override
@@ -209,7 +203,7 @@ public class ColorMeThis extends Activity implements
                 startActivity(intent);
                 return true;
             case R.id.settings:
-                //startActivityForResult(new Intent(this, Settings.class), 0);
+                startActivityForResult(new Intent(this, Settings.class), 0);
                 return true;
             /**
              case R.id.palette:
@@ -305,9 +299,7 @@ public class ColorMeThis extends Activity implements
     }
 
     private class CaptureClickListener implements View.OnClickListener {
-        public void onClick (View view) {
-            mCamera.takePicture(null, null, mPicture);
-        }
+        public void onClick (View view) { mCamera.takePicture(null, null, mPicture); }
     }
 
     PictureCallback mPicture = new PictureCallback() {

@@ -1,6 +1,8 @@
 package aasgmkrm.colormethis;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -18,11 +20,12 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * Created by smercier91 on 4/6/15.
@@ -35,9 +38,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     // touch coordinates
     private int x;
     private int y;
-
-    @SuppressWarnings("unused")
-    private static final float MIN_ZOOM = 0.4f, MAX_ZOOM = 2.0f;
 
     // These matrices will be used to scale points of the image
     Matrix matrix = new Matrix();
@@ -60,11 +60,30 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     int reqWidth;
     int reqHeight;
 
+    private static final float MAX_ZOOM = 3.0f;
+
     private float density;
     RectF displayRect = new RectF();
 
     GradientDrawable colorDisplayer;
+    TextView colorNameDisplayer;
     TextView hexDisplayer;
+    TextView rgbDisplayer;
+
+    private SharedPreferences mPrefs;
+    private boolean mColorNameOn = true;
+    private boolean mColorRGBOn = true;
+    private boolean mColorHexOn = true;
+
+    // For database:
+    MySQLiteHelper db;
+    int colorBox;
+    String colorName;
+    String colorRGB;
+    String colorHex;
+
+    private ImageButton saveToPalette;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,26 +95,19 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         setContentView(R.layout.workspace);
 
+        mPrefs = getSharedPreferences("cmt_prefs", MODE_PRIVATE);
+        getSettings();
+
         Intent intent = getIntent();
         String message = intent.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
 
-        MySQLiteHelper db = new MySQLiteHelper(this);
-
-        /** Testing database */
-        db.addPaletteColor(new PaletteColor(23, "red", "red rgb", "#FF0000"));
-        db.addPaletteColor(new PaletteColor(24, "green", "green rgb", "#00FF00"));
-        db.addPaletteColor(new PaletteColor(25, "blue", "blue rgb", "#0000FF"));
-
-        List<PaletteColor> list = db.getAllPaletteColors();
-
-        db.deletePaletteColor(list.get(0));
-
-        db.getAllPaletteColors();
-
-        /** End testing database */
-
         colorDisplayer = (GradientDrawable) findViewById(R.id.color_display_box).getBackground();
+        colorNameDisplayer = (TextView) findViewById(R.id.color_name);
         hexDisplayer = (TextView) findViewById(R.id.hex_displayer);
+        rgbDisplayer = (TextView) findViewById(R.id.rgb_displayer);
+
+        db = new MySQLiteHelper(this);
+        saveToPalette = (ImageButton) findViewById(R.id.add_to_library);
 
         File imgFile = new File(message);
         if(imgFile.exists()) {
@@ -126,6 +138,9 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             Log.d(TAG, "SIZE OF IMAGE: " + bitmapWidth + " x " + bitmapHeight);
             myImage.setImageBitmap(myBitmap);
             myImage.setOnTouchListener(this);
+
+            saveToPalette.setEnabled(true);
+            saveToPalette.setOnClickListener(new SaveToPaletteListener());
         }
     }
 
@@ -146,16 +161,38 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
 
     private void setColorDisplayer(int color){
-        String hexString = String.format("#%06X", (0xFFFFFF & color));
+        colorHex = String.format("#%06X", (0xFFFFFF & color));
         colorDisplayer.setColor(color);
-        hexDisplayer.setText(hexString);
-        Log.d("ColorHex", hexString);
+        // if (mColorNameOn) { colorNameDisplayer.setText(...); }
+        if (mColorHexOn) { hexDisplayer.setText(colorHex); }
+        // if (mColorRGBOn) { rgbDisplayer.setText(...); }
+        Log.d("ColorHex", colorHex);
     }
 
 
+    /** Save to palette button:
+     *  Store the color, color name, color RGB and color hex to the database.
+     *  */
+    private class SaveToPaletteListener implements View.OnClickListener {
+        public void onClick(View v) {
+            // if (...) { }            // If it's the default, don't allow clicks!
+
+            db.addPaletteColor(new PaletteColor(colorBox, colorName, colorRGB, colorHex));
+            Log.d(TAG, "Added to database: " +
+                    colorBox + ", " +
+                    colorName + ", " +
+                    colorRGB + ", " +
+                    colorHex);
+
+            Context context = getApplicationContext();
+            CharSequence text = "Saved " + colorName + " (" + colorHex + ") to the Palette!";
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
+    }
 
 
-    // new code
     public static Bitmap decodeSampledBitmapFromResource(File imgFile,
                                                          int reqWidth, int reqHeight) {
 
@@ -172,7 +209,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         return BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
     }
 
-    // new code
+
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
@@ -195,6 +232,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         return inSampleSize;
     }
+
 
     /** MotionEvent: Zoom and Scroll
      *  Source:
@@ -223,7 +261,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 x = (int) event.getX();
                 y = (int) event.getY();
 
-                int color = getColor(x, y);
+                colorBox = getColor(x, y);
 
 /*               try {
                     color = Utils.findColor(myImage, x, y);
@@ -231,7 +269,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                     Log.d(TAG, "Divide by zero.");
                 }*/
 
-                setColorDisplayer(color);
+                setColorDisplayer(colorBox);
 
 /*              Context context = getApplicationContext();
                 CharSequence text = "R: " + Color.red(color) + "  G: " + Color.green(color) + "  B: "
@@ -312,6 +350,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         return true; // indicate event was handled
     }
 
+
     /*
      * --------------------------------------------------------------------------
      * Method: spacing Parameters: MotionEvent Returns: float Description:
@@ -337,6 +376,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         float y = event.getY(0) + event.getY(1);
         point.set(x / 2, y / 2);
     }
+
 
     /** Show an event in the LogCat view, for debugging */
     private void dumpEvent(MotionEvent event) {
@@ -367,6 +407,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         Log.d(TAG, sb.toString());
     }
 
+
     private int getColor(int x, int y) {
         float[] xy = new float[] {x, y};
 
@@ -390,6 +431,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         int color = bm.getPixel(ex, ey);
         return color;
     }
+
 
     private void adjustPan() {
         displayRect.set(0, 0, reqWidth, reqHeight);
@@ -431,5 +473,11 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             y = -currentY + (displayRect.height() - currentHeight) / 2;
 
         matrix.postTranslate(x, y);
+    }
+
+    public void getSettings() {
+        mColorNameOn = mPrefs.getBoolean("color_name", true);
+        mColorHexOn = mPrefs.getBoolean("color_hex", true);
+        mColorRGBOn = mPrefs.getBoolean("color_rgb", true);
     }
 }
