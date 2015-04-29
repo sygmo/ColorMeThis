@@ -1,6 +1,9 @@
 package aasgmkrm.colormethis;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -14,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.ClipboardManager;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.Display;
@@ -82,7 +86,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     String colorRGB;
     String colorHex;
 
-    private ImageButton saveToPalette;
+    private ImageButton copyOrSave;
 
 
     @Override
@@ -107,7 +111,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         rgbDisplayer = (TextView) findViewById(R.id.rgb_displayer);
 
         db = new MySQLiteHelper(this);
-        saveToPalette = (ImageButton) findViewById(R.id.add_to_library);
+        copyOrSave = (ImageButton) findViewById(R.id.add_to_library);
 
         File imgFile = new File(message);
         if(imgFile.exists()) {
@@ -139,8 +143,8 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             myImage.setImageBitmap(myBitmap);
             myImage.setOnTouchListener(this);
 
-            saveToPalette.setEnabled(true);
-            saveToPalette.setOnClickListener(new SaveToPaletteListener());
+            copyOrSave.setEnabled(true);
+            copyOrSave.setOnLongClickListener(new CopyOrSaveListener());
         }
     }
 
@@ -173,23 +177,48 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     /** Save to palette button:
      *  Store the color, color name, color RGB and color hex to the database.
      *  */
-    private class SaveToPaletteListener implements View.OnClickListener {
-        public void onClick(View v) {
-            // if (...) { }            // If it's the default, don't allow clicks!
-
-            db.addPaletteColor(new PaletteColor(colorBox, colorName, colorRGB, colorHex));
-            Log.d(TAG, "Added to database: " +
-                    colorBox + ", " +
-                    colorName + ", " +
-                    colorRGB + ", " +
-                    colorHex);
-
-            Context context = getApplicationContext();
-            CharSequence text = "Saved " + colorName + " (" + colorHex + ") to the Palette!";
-            int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+    private class CopyOrSaveListener implements View.OnLongClickListener {
+        public boolean onLongClick(View v) {
+            showDialog(0);
+            return true;
         }
+    }
+
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String copy_hex = "Copy hex to clipboard.";
+        String save_palette = "Save color to palette.";
+        CharSequence[] options = new CharSequence[] { copy_hex, save_palette };
+
+        builder.setTitle("Choose an option.");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    ClipboardManager clipboard = (ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboard.setText(colorHex);
+                }
+
+                else {
+                    db.addPaletteColor(new PaletteColor(colorBox, colorName, colorRGB, colorHex));
+                    Log.d(TAG, "Added to database: " +
+                            colorBox + ", " +
+                            colorName + ", " +
+                            colorRGB + ", " +
+                            colorHex);
+
+                    Context context = getApplicationContext();
+                    CharSequence text = "Saved " + colorName + " (" + colorHex + ") to the Palette!";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
+            }
+        });
+        return builder.show();
     }
 
 

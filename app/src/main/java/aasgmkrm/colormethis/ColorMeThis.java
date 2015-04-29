@@ -235,7 +235,7 @@ public class ColorMeThis extends Activity implements
     public Dialog createQuitDialog(AlertDialog.Builder builder) {
         builder.setMessage(R.string.quit_question).setCancelable(false)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                    public void onClick(DialogInterface st, int id) {
                         ColorMeThis.this.finish();
                     }
                 })
