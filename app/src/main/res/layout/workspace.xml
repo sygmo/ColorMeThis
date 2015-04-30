@@ -74,7 +74,62 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/hex_displayer"
                 android:textColor="#FFFFFF"
-                android:text="RGB"/>
+                android:text="RGB:"/>
+
+            <!-- Start RGB displayer -->
+            <RelativeLayout
+                android:id="@+id/red_displayer"
+                android:layout_width="4dp"
+                android:layout_height="14dp"
+                android:background="@color/Red"
+                android:layout_below="@id/hex_displayer"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="2dp"
+                android:layout_toRightOf="@id/rgb_displayer"></RelativeLayout>
+            <TextView
+                android:id="@+id/red_value_text"
+                android:layout_width="26dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/hex_displayer"
+                android:layout_toRightOf="@id/red_displayer"
+                android:layout_marginLeft="3dp"
+                android:textColor="#FFFFFF" />
+            <RelativeLayout
+                android:id="@+id/green_displayer"
+                android:layout_width="4dp"
+                android:layout_height="14dp"
+                android:background="@color/Green"
+                android:layout_below="@id/hex_displayer"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="2dp"
+                android:layout_toRightOf="@id/red_value_text"></RelativeLayout>
+            <TextView
+                android:id="@+id/green_value_text"
+                android:layout_width="26dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/hex_displayer"
+                android:layout_toRightOf="@id/green_displayer"
+                android:layout_marginLeft="3dp"
+                android:textColor="#FFFFFF" />
+            <RelativeLayout
+                android:id="@+id/blue_displayer"
+                android:layout_width="4dp"
+                android:layout_height="14dp"
+                android:background="@color/Blue"
+                android:layout_below="@id/hex_displayer"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="2dp"
+                android:layout_toRightOf="@id/green_value_text"></RelativeLayout>
+            <TextView
+                android:id="@+id/blue_value_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/hex_displayer"
+                android:layout_toRightOf="@id/blue_displayer"
+                android:layout_marginLeft="3dp"
+                android:textColor="#FFFFFF" />
+
+
 
         </RelativeLayout>
 
@@ -109,12 +164,13 @@
         </RelativeLayout>
 
         <ImageButton
-            android:id="@+id/button_capture"
+            android:id="@+id/camera_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/take_photo_btn"
+            android:src="@drawable/camera_back"
+            android:scaleType="fitCenter"
             android:background="@null"/>
 
         <ImageView

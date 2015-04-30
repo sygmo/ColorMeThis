@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -15,6 +17,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.ClipboardManager;
@@ -26,8 +29,10 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.provider.MediaStore;
 
 import java.io.File;
 
@@ -95,6 +100,18 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     String colorRGB;
     String colorHex;
 
+    TextView red_text;
+    TextView green_text;
+    TextView blue_text;
+
+    private ImageView mGrabPhotoView;
+    private static final int SELECT_PICTURE = 1;
+    private String selectedImagePath;
+
+    private ImageButton returnToCamera;
+
+    private Bitmap mBitmap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +133,17 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         colorNameDisplayer = (TextView) findViewById(R.id.color_name);
         hexDisplayer = (TextView) findViewById(R.id.hex_displayer);
         rgbDisplayer = (TextView) findViewById(R.id.rgb_displayer);
+        red_text = (TextView) findViewById(R.id.red_value_text);
+        green_text = (TextView) findViewById(R.id.green_value_text);
+        blue_text = (TextView) findViewById(R.id.blue_value_text);
+
+        mGrabPhotoView = (ImageView) findViewById(R.id.grab_photo);
+
+        setGrabPhotoImage();
+        mGrabPhotoView.setOnClickListener(new GrabClickListener());
+
+        returnToCamera = (ImageButton) findViewById(R.id.camera_back);
+        returnToCamera.setOnClickListener(new goBackToCameraListener());
 
         db = new MySQLiteHelper(this);
         copyOrSave = (ImageButton) findViewById(R.id.add_to_library);
@@ -156,6 +184,77 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     }
 
 
+    public static String getImagePath(Intent data, Context context) {
+        Uri selectedImage = data.getData();
+        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver()
+                .query(selectedImage,filePathColumn, null, null, null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String selectedImagePath = cursor.getString(columnIndex);
+        cursor.close();
+        return selectedImagePath;
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Workspace activity = Workspace.this;
+                selectedImagePath = getImagePath(data, activity);
+                mBitmap = BitmapFactory.decodeFile(selectedImagePath);
+                myImage.setImageBitmap(mBitmap);
+
+                /*
+                if (selectedImagePath != null) {
+                    // open image view (workspace)
+                    myImage.setImageBitmap(null);
+                }
+
+                else
+                    Log.d(TAG, "The selected image path is NULL.");
+            }*/
+        }
+    }
+    }
+
+    private class goBackToCameraListener implements View.OnClickListener{
+        public void onClick(View view){
+            finish();
+        }
+    }
+
+    private class GrabClickListener implements View.OnClickListener {
+        public void onClick (View view) {
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, SELECT_PICTURE);
+        }
+    }
+
+    private void setGrabPhotoImage() {
+        String[] projection = new String[]{
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATE_TAKEN,
+                MediaStore.Images.ImageColumns.MIME_TYPE
+        };
+
+        final Cursor cursor = getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                        null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+        if (cursor.moveToFirst()) {
+
+            String imageLocation = cursor.getString(1);
+            File imageFile = new File(imageLocation);
+            if (imageFile.exists()) {
+                Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                mGrabPhotoView.setImageBitmap(bm);
+            }
+        }
+    }
+
     // Immersive full-screen mode: for API level 19 and above.
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -175,9 +274,14 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         colorHex = String.format("#%06X", (0xFFFFFF & color));
         colorDisplayer.setColor(color);
         // if (mColorNameOn) { colorNameDisplayer.setText(...); }
-        if (mColorHexOn) { hexDisplayer.setText(colorHex); }
+        if (mColorHexOn) { hexDisplayer.setText("Hex: "+ colorHex); }
         // if (mColorRGBOn) { rgbDisplayer.setText(...); }
+
+        red_text.setText(""+Color.red(color));
+        green_text.setText(""+Color.green(color));
+        blue_text.setText(""+Color.blue(color));
         Log.d("ColorHex", colorHex);
+
     }
 
 
