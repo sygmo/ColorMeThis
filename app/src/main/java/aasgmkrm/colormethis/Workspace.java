@@ -69,15 +69,24 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     private float density;
     RectF displayRect = new RectF();
 
+    // For displayer:
     GradientDrawable colorDisplayer;
     TextView colorNameDisplayer;
     TextView hexDisplayer;
     TextView rgbDisplayer;
 
+    // For toasts:
+    private Context context;
+    private CharSequence text;
+    private int duration;
+    private Toast toast;
+
+    // For settings:
     private SharedPreferences mPrefs;
     private boolean mColorNameOn = true;
     private boolean mColorRGBOn = true;
     private boolean mColorHexOn = true;
+    private ImageButton copyOrSave;
 
     // For database:
     MySQLiteHelper db;
@@ -85,8 +94,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     String colorName;
     String colorRGB;
     String colorHex;
-
-    private ImageButton copyOrSave;
 
 
     @Override
@@ -188,18 +195,25 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     @Override
     protected Dialog onCreateDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String copy_hex = "Copy hex to clipboard.";
-        String save_palette = "Save color to palette.";
+        String copy_hex = "Copy hex to clipboard";
+        String save_palette = "Save color to palette";
         CharSequence[] options = new CharSequence[] { copy_hex, save_palette };
 
-        builder.setTitle("Choose an option.");
+        builder.setTitle("Choose an option");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 if (which == 0) {
                     ClipboardManager clipboard = (ClipboardManager)
                             getSystemService(Context.CLIPBOARD_SERVICE);
                     clipboard.setText(colorHex);
+
+                    context = getApplicationContext();
+                    text = "Copied " + colorHex + " to the clipboard.";
+                    duration = Toast.LENGTH_SHORT;
+                    toast = Toast.makeText(context, text, duration);
+                    toast.show();
                 }
 
                 else {
@@ -210,14 +224,15 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                             colorRGB + ", " +
                             colorHex);
 
-                    Context context = getApplicationContext();
-                    CharSequence text = "Saved " + colorName + " (" + colorHex + ") to the Palette!";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
+                    context = getApplicationContext();
+                    text = "Saved " + colorName + " (" + colorHex + ") to the Palette!";
+                    duration = Toast.LENGTH_SHORT;
+                    toast = Toast.makeText(context, text, duration);
                     toast.show();
                 }
             }
         });
+
         return builder.show();
     }
 
