@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.text.ClipboardManager;
 import android.util.FloatMath;
@@ -29,10 +32,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.provider.MediaStore;
 
 import java.io.File;
 
@@ -97,7 +98,9 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     MySQLiteHelper db;
     int colorBox;
     String colorName;
-    String colorRGB;
+    int colorRed;
+    int colorGreen;
+    int colorBlue;
     String colorHex;
 
     TextView red_text;
@@ -271,17 +274,21 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
 
     private void setColorDisplayer(int color){
+         colorName = getClosestColor(color);
+        colorRed = Color.red(color);
+        colorGreen = Color.green(color);
+        colorBlue = Color.blue(color);
         colorHex = String.format("#%06X", (0xFFFFFF & color));
+
         colorDisplayer.setColor(color);
-        // if (mColorNameOn) { colorNameDisplayer.setText(...); }
+        if (mColorNameOn) { colorNameDisplayer.setText(colorName); }
         if (mColorHexOn) { hexDisplayer.setText("Hex: "+ colorHex); }
-        // if (mColorRGBOn) { rgbDisplayer.setText(...); }
-
-        red_text.setText(""+Color.red(color));
-        green_text.setText(""+Color.green(color));
-        blue_text.setText(""+Color.blue(color));
+        if (mColorRGBOn) {
+            red_text.setText("" + colorRed);
+            green_text.setText("" + colorGreen);
+            blue_text.setText("" + colorBlue);
+        }
         Log.d("ColorHex", colorHex);
-
     }
 
 
@@ -321,11 +328,19 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 }
 
                 else {
-                    db.addPaletteColor(new PaletteColor(colorBox, colorName, colorRGB, colorHex));
+                    db.addPaletteColor(new PaletteColor(colorBox,
+                            colorName,
+                            colorRed,
+                            colorGreen,
+                            colorBlue,
+                            colorHex));
+
                     Log.d(TAG, "Added to database: " +
                             colorBox + ", " +
                             colorName + ", " +
-                            colorRGB + ", " +
+                            colorRed + ", " +
+                            colorGreen + ", " +
+                            colorBlue + ", " +
                             colorHex);
 
                     context = getApplicationContext();
@@ -628,4 +643,33 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         mColorHexOn = mPrefs.getBoolean("color_hex", true);
         mColorRGBOn = mPrefs.getBoolean("color_rgb", true);
     }
+
+   public String getClosestColor(int color) {
+       Resources r = getApplicationContext().getResources();
+       TypedArray all_colors = r.obtainTypedArray(R.array.all_colors);
+       String[] all_color_names = r.getStringArray(R.array.all_color_names);
+       double closest = Integer.MAX_VALUE;
+       String closestColor = "";
+
+       for (int i = 0; i < all_colors.length(); i++) {
+           int currentColor = all_colors.getColor(i, 0);
+           if (color == currentColor) {
+               closestColor = all_color_names[i];
+               break;
+           } else {
+               
+               /** THIS IS NOT WORKING CORRECTLY RIGHT NOW!! */
+                double distance = Math.sqrt((Color.red(color) - Color.red(currentColor))^2 +
+                        (Color.green(color) - Color.green(currentColor))^2 +
+                        (Color.blue(color) - Color.blue(currentColor))^2);
+
+               if (distance < closest) {
+                   closest = distance;
+                   closestColor = all_color_names[i];
+               }
+           }
+       }
+
+       return closestColor;
+   }
 }

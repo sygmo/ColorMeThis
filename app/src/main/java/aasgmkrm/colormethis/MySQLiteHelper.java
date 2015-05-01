@@ -26,10 +26,18 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_ID = "id";
     private static final String KEY_COLOR = "color";
     private static final String KEY_COLOR_NAME = "color_name";
-    private static final String KEY_COLOR_RGB = "color_rgb";
+    private static final String KEY_COLOR_RED = "color_red";
+    private static final String KEY_COLOR_GREEN = "color_green";
+    private static final String KEY_COLOR_BLUE = "color_blue";
     private static final String KEY_COLOR_HEX = "color_hex";
 
-    private static final String[] COLUMNS = {KEY_ID, KEY_COLOR, KEY_COLOR_NAME, KEY_COLOR_RGB, KEY_COLOR_HEX};
+    private static final String[] COLUMNS = {KEY_ID,
+            KEY_COLOR,
+            KEY_COLOR_NAME,
+            KEY_COLOR_RED,
+            KEY_COLOR_GREEN,
+            KEY_COLOR_BLUE,
+            KEY_COLOR_HEX};
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,7 +50,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "color INTEGER, "+
                 "color_name TEXT, " +
-                "color_rgb TEXT, " +
+                "color_red INTEGER " +
+                "color_green INTEGER, " +
+                "color_blue INTEGER, " +
                 "color_hex TEXT )";
 
         // create books table
@@ -71,7 +81,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_COLOR, pc.getColor());
         values.put(KEY_COLOR_NAME, pc.getColorName());
-        values.put(KEY_COLOR_RGB, pc.getColorRGB());
+        values.put(KEY_COLOR_RED, pc.getColorRed());
+        values.put(KEY_COLOR_GREEN, pc.getColorGreen());
+        values.put(KEY_COLOR_BLUE, pc.getColorBlue());
         values.put(KEY_COLOR_HEX, pc.getColorHex());
 
         // insert
@@ -108,8 +120,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         pc.setId(Integer.parseInt(cursor.getString(0)));
         pc.setColor(Integer.parseInt(cursor.getString(1)));
         pc.setColorName(cursor.getString(2));
-        pc.setColorRGB(cursor.getString(3));
-        pc.setColorHex(cursor.getString(4));
+        pc.setColorRed(Integer.parseInt(cursor.getString(3)));
+        pc.setColorGreen(Integer.parseInt(cursor.getString(4)));
+        pc.setColorBlue(Integer.parseInt(cursor.getString(5)));
+        pc.setColorHex(cursor.getString(6));
 
         // log
         Log.d("getPaletteColor("+id+")", pc.toString());
@@ -136,8 +150,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 pc.setId(Integer.parseInt(cursor.getString(0)));
                 pc.setColor(Integer.parseInt(cursor.getString(1)));
                 pc.setColorName(cursor.getString(2));
-                pc.setColorRGB(cursor.getString(3));
-                pc.setColorHex(cursor.getString(4));
+                pc.setColorRed(Integer.parseInt(cursor.getString(3)));
+                pc.setColorGreen(Integer.parseInt(cursor.getString(4)));
+                pc.setColorBlue(Integer.parseInt(cursor.getString(5)));
+                pc.setColorHex(cursor.getString(6));
 
                 // add color to colorsList
                 colorsList.add(pc);
@@ -160,7 +176,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_COLOR, pc.getColor());
         values.put(KEY_COLOR_NAME, pc.getColorName());
-        values.put(KEY_COLOR_RGB, pc.getColorRGB());
+        values.put(KEY_COLOR_RED, pc.getColorRed());
+        values.put(KEY_COLOR_GREEN, pc.getColorGreen());
+        values.put(KEY_COLOR_BLUE, pc.getColorBlue());
         values.put(KEY_COLOR_HEX, pc.getColorHex());
 
         // updating row
