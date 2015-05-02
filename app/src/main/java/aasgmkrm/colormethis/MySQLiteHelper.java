@@ -37,7 +37,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             KEY_COLOR_RED,
             KEY_COLOR_GREEN,
             KEY_COLOR_BLUE,
-            KEY_COLOR_HEX};
+            KEY_COLOR_HEX };
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,14 +46,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // SQL statement to create book table
-        String CREATE_PALETTE_TABLE = "CREATE TABLE palette ( " +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "color INTEGER, "+
-                "color_name TEXT, " +
-                "color_red INTEGER " +
-                "color_green INTEGER, " +
-                "color_blue INTEGER, " +
-                "color_hex TEXT )";
+        String CREATE_PALETTE_TABLE = "CREATE TABLE " + TABLE_PALETTE + " (" +
+                KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                KEY_COLOR + " INTEGER, "+
+                KEY_COLOR_NAME + " TEXT, " +
+                KEY_COLOR_RED + " INTEGER " +
+                KEY_COLOR_GREEN + " INTEGER, " +
+                KEY_COLOR_BLUE + " INTEGER, " +
+                KEY_COLOR_HEX + " TEXT); ";
 
         // create books table
         db.execSQL(CREATE_PALETTE_TABLE);
@@ -62,7 +62,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older books table if existed
-        db.execSQL("DROP TABLE IF EXISTS palette");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PALETTE);
 
         // create fresh books table
         this.onCreate(db);
@@ -103,13 +103,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // build query
         Cursor cursor =
                 db.query(TABLE_PALETTE, // table
-                COLUMNS, // column names
-                " id = ?", // selections
-                new String[] { String.valueOf(id) }, // selections args
-                null, // group by
-                null, // having
-                null, // order by
-                null); // limit
+                        COLUMNS, // column names
+                        " id = ?", // selections
+                        new String[] { String.valueOf(id) }, // selections args
+                        null, // group by
+                        null, // having
+                        null, // order by
+                        null); // limit
 
         // if we got results get the first one
         if (cursor != null)
@@ -126,7 +126,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         pc.setColorHex(cursor.getString(6));
 
         // log
-        Log.d("getPaletteColor("+id+")", pc.toString());
+        Log.d("getPaletteColor(" + id +")", pc.toString());
 
         // return paletteColor
         return pc;
@@ -201,7 +201,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         // delete
-        db.delete(TABLE_PALETTE, KEY_ID+" = ?", new String[] { String.valueOf(pc.getId()) });
+        db.delete(TABLE_PALETTE, KEY_ID + " = ?", new String[] { String.valueOf(pc.getId()) });
 
         // close
         db.close();

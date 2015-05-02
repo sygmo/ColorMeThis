@@ -63,11 +63,6 @@
             android:label="@string/app_name">
         </activity>
 
-        <activity
-            android:name=".WorkspaceDrawer"
-            android:label="@string/title_activity_workspace_drawer" >
-        </activity>
-
     </application>
 
 </manifest>
