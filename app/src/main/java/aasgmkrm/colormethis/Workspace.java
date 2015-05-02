@@ -19,6 +19,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -36,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by smercier91 on 4/6/15.
@@ -116,6 +118,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     private ImageButton openLibrary;
 
     private Bitmap mBitmap;
+    private static int orientation = 0; // NEW CODE!
 
 
 
@@ -213,9 +216,25 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             if (requestCode == SELECT_PICTURE) {
                 Workspace activity = Workspace.this;
                 selectedImagePath = getImagePath(data, activity);
-                mBitmap = BitmapFactory.decodeFile(selectedImagePath);
+
+                // NEW CODE
+                //mBitmap = BitmapFactory.decodeFile(selectedImagePath);
+                // get size of display
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                reqWidth = size.x;
+                reqHeight = size.y;
+                String message = data.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
+                if (message != null) {
+                    File imgFile = new File(message);
+                    mBitmap = Workspace.decodeSampledBitmapFromResource(imgFile, reqWidth, reqHeight);
+                }
+                //Bitmap bm = decodeSampledBitmapFromResource(imageFile, reqWidth, reqHeight);
+
                 myImage.setImageBitmap(mBitmap);
 
+                // OLD CODE
                 /*
                 if (selectedImagePath != null) {
                     // open image view (workspace)
@@ -225,8 +244,8 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 else
                     Log.d(TAG, "The selected image path is NULL.");
             }*/
+            }
         }
-    }
     }
 
     private class goBackToCameraListener implements View.OnClickListener{
@@ -267,7 +286,15 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
             if (imageFile.exists()) {
-                Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                //Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                // NEW CODE
+                // get size of display
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                reqWidth = size.x;
+                reqHeight = size.y;
+                Bitmap bm = decodeSampledBitmapFromResource(imageFile, reqWidth, reqHeight);
                 mGrabPhotoView.setImageBitmap(bm);
             }
         }
@@ -392,7 +419,21 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
+
+        // NEW CODE
+        // rotate image if needed
+        //int rotation = getCameraPhotoOrientation(context, myBitmap., imgFile.getAbsolutePath());
+        try {
+            ExifInterface exif = new ExifInterface(imgFile.getAbsolutePath());
+            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Bitmap bmRotated = rotateBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options), orientation);
+
+        return bmRotated;
+        //return BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
     }
 
 
@@ -417,6 +458,53 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         }
 
         return inSampleSize;
+    }
+
+    // NEW CODE
+    // rotates the bitmap to portrait orientation
+    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+
+        Matrix m = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_NORMAL:
+                return bitmap;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                m.setScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                m.setRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                m.setRotate(180);
+                m.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                m.setRotate(90);
+                m.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                m.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                m.setRotate(-90);
+                m.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                m.setRotate(-90);
+                break;
+            default:
+                return bitmap;
+        }
+        try {
+            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+            bitmap.recycle();
+            return bmRotated;
+        }
+        catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            return null;
+        }
+        //return bitmap;
     }
 
 
@@ -667,31 +755,31 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         mColorRGBOn = mPrefs.getBoolean("color_rgb", true);
     }
 
-   public String getClosestColor(int color) {
-       Resources r = getApplicationContext().getResources();
-       TypedArray all_colors = r.obtainTypedArray(R.array.all_colors);
-       String[] all_color_names = r.getStringArray(R.array.all_color_names);
-       double closest = Integer.MAX_VALUE;
-       String closestColor = "";
+    public String getClosestColor(int color) {
+        Resources r = getApplicationContext().getResources();
+        TypedArray all_colors = r.obtainTypedArray(R.array.all_colors);
+        String[] all_color_names = r.getStringArray(R.array.all_color_names);
+        double closest = Integer.MAX_VALUE;
+        String closestColor = "";
 
-       for (int i = 0; i < all_colors.length(); i++) {
-           int currentColor = all_colors.getColor(i, 0);
-           if (color == currentColor) {
-               closestColor = all_color_names[i];
-               break;
-           } else {
+        for (int i = 0; i < all_colors.length(); i++) {
+            int currentColor = all_colors.getColor(i, 0);
+            if (color == currentColor) {
+                closestColor = all_color_names[i];
+                break;
+            } else {
 
                 double d = distance(color, currentColor);
 
-               if (d < closest) {
-                   closest = d;
-                   closestColor = all_color_names[i];
-               }
-           }
-       }
+                if (d < closest) {
+                    closest = d;
+                    closestColor = all_color_names[i];
+                }
+            }
+        }
 
-       return closestColor;
-   }
+        return closestColor;
+    }
 
     public double distance(int a, int b) {
         return Math.abs(Color.red(a) - Color.red(b)) +

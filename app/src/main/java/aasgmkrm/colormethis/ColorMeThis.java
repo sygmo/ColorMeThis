@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +65,10 @@ public class ColorMeThis extends Activity implements
 
     private final int DIALOG_QUIT_ID = 0;
     public final static String WORKSPACE_MESSAGE = "aasgmkrm.colormethis.MESSAGE";
+
+    // NEW CODE
+    int reqWidth;
+    int reqHeight;
 
     /** Called when the activity is first created. */
     @Override
@@ -207,7 +213,7 @@ public class ColorMeThis extends Activity implements
                 startActivityForResult(new Intent(this, Settings.class), 0);
                 return true;
 
-             case R.id.palette:
+            case R.id.palette:
                 startActivityForResult(new Intent(this, PaletteActivity.class), 0);
                 return true;
         }
@@ -273,7 +279,15 @@ public class ColorMeThis extends Activity implements
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
             if (imageFile.exists()) {   // TODO: is there a better way to do this?
-                Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                //Bitmap bm = BitmapFactory.decodeFile(imageLocation);
+                // NEW CODE
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                reqWidth = size.x;
+                reqHeight = size.y;
+                Bitmap bm = Workspace.decodeSampledBitmapFromResource(imageFile, reqWidth, reqHeight);
+
                 mGrabPhotoView.setImageBitmap(bm);
             }
         }
@@ -376,7 +390,20 @@ public class ColorMeThis extends Activity implements
             if (requestCode == SELECT_PICTURE) {
                 ColorMeThis activity = ColorMeThis.this;
                 selectedImagePath = getImagePath(data, activity);
-                mBitmap = BitmapFactory.decodeFile(selectedImagePath);
+                //mBitmap = BitmapFactory.decodeFile(selectedImagePath);
+                //mImageView.setImageBitmap(mBitmap);
+
+                // NEW CODE
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                reqWidth = size.x;
+                reqHeight = size.y;
+                String message = data.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
+                if (message != null) {
+                    File imgFile = new File(message);
+                    mBitmap = Workspace.decodeSampledBitmapFromResource(imgFile, reqWidth, reqHeight);
+                }
                 mImageView.setImageBitmap(mBitmap);
 
                 if (selectedImagePath != null) {
