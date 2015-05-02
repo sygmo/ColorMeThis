@@ -11,6 +11,17 @@
         android:layout_height="fill_parent"
         android:layout_gravity="center_horizontal"/>
 
+    <ImageButton
+        android:id="@+id/settingsbtn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/settingsicon"
+        android:scaleType="fitCenter"
+        android:background="@null"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"/>
+
     <!-- Color toolbox -->
 
     <RelativeLayout

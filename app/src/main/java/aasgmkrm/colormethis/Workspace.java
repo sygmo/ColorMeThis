@@ -112,8 +112,10 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     private String selectedImagePath;
 
     private ImageButton returnToCamera;
+    private ImageButton settingsBtn;
 
     private Bitmap mBitmap;
+
 
 
     @Override
@@ -144,6 +146,9 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         setGrabPhotoImage();
         mGrabPhotoView.setOnClickListener(new GrabClickListener());
+
+        settingsBtn = (ImageButton) findViewById(R.id.settingsbtn);
+        settingsBtn.setOnClickListener(new SettingsClickListener());
 
         returnToCamera = (ImageButton) findViewById(R.id.camera_back);
         returnToCamera.setOnClickListener(new goBackToCameraListener());
@@ -234,6 +239,12 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         }
     }
 
+    private class SettingsClickListener implements View.OnClickListener{
+        public void onClick (View view){
+            startActivity(new Intent(getApplicationContext(), Settings.class));
+        }
+    }
+
     private void setGrabPhotoImage() {
         String[] projection = new String[]{
                 MediaStore.Images.ImageColumns._ID,
@@ -301,6 +312,8 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             return true;
         }
     }
+
+
 
 
     @Override
