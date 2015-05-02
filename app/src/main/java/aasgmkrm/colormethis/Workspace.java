@@ -113,6 +113,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
     private ImageButton returnToCamera;
     private ImageButton settingsBtn;
+    private ImageButton openLibrary;
 
     private Bitmap mBitmap;
 
@@ -152,6 +153,9 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         returnToCamera = (ImageButton) findViewById(R.id.camera_back);
         returnToCamera.setOnClickListener(new goBackToCameraListener());
+
+        openLibrary = (ImageButton) findViewById(R.id.library_open_btn);
+        openLibrary.setOnClickListener(new openLibraryListener());
 
         db = new MySQLiteHelper(this);
         copyOrSave = (ImageButton) findViewById(R.id.add_to_library);
@@ -310,6 +314,12 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         public boolean onLongClick(View v) {
             showDialog(0);
             return true;
+        }
+    }
+
+    private class openLibraryListener implements View.OnClickListener{
+        public void onClick (View view){
+            startActivity(new Intent(getApplicationContext(), PaletteActivity.class));
         }
     }
 

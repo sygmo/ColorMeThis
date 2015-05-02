@@ -3,7 +3,8 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:id="@+id/workspaceParent">
+    android:id="@+id/workspaceParent"
+    android:background="#000000">
 
     <ImageView
         android:id="@+id/selection"
@@ -188,7 +189,18 @@
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginTop="5dp"
-            android:layout_marginLeft="20dp"></ImageView>
+            android:layout_marginLeft="20dp"/>
+
+        <ImageButton
+            android:id="@+id/library_open_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/libraryopen"
+            android:scaleType="fitCenter"
+            android:background="@null"/>
+
     </RelativeLayout>
     <!-- end of bottom menu -->
 
