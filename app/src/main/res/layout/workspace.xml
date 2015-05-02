@@ -52,7 +52,6 @@
                 android:layout_marginLeft="45dp"
                 android:textColor="#FFFFFF"
                 android:singleLine="true"
-                android:text="Kevin"
                 android:ellipsize="marquee"
                 android:focusable="true"
                 android:focusableInTouchMode="true"

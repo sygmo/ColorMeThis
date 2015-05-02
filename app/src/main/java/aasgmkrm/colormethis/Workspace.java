@@ -274,7 +274,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
 
     private void setColorDisplayer(int color){
-         colorName = getClosestColor(color);
+        colorName = getClosestColor(color);
         colorRed = Color.red(color);
         colorGreen = Color.green(color);
         colorBlue = Color.blue(color);
@@ -657,14 +657,11 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                closestColor = all_color_names[i];
                break;
            } else {
-               
-               /** THIS IS NOT WORKING CORRECTLY RIGHT NOW!! */
-                double distance = Math.sqrt((Color.red(color) - Color.red(currentColor))^2 +
-                        (Color.green(color) - Color.green(currentColor))^2 +
-                        (Color.blue(color) - Color.blue(currentColor))^2);
 
-               if (distance < closest) {
-                   closest = distance;
+                double d = distance(color, currentColor);
+
+               if (d < closest) {
+                   closest = d;
                    closestColor = all_color_names[i];
                }
            }
@@ -672,4 +669,10 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
        return closestColor;
    }
+
+    public double distance(int a, int b) {
+        return Math.abs(Color.red(a) - Color.red(b)) +
+                Math.abs(Color.green(a) - Color.green(b)) +
+                Math.abs(Color.blue(a) - Color.blue(b));
+    }
 }

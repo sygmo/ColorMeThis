@@ -202,13 +202,14 @@ public class ColorMeThis extends Activity implements
                 Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
                 return true;
+
             case R.id.settings:
                 startActivityForResult(new Intent(this, Settings.class), 0);
                 return true;
-            /**
+
              case R.id.palette:
-             return true;
-             */
+                startActivityForResult(new Intent(this, PaletteActivity.class), 0);
+                return true;
         }
         return false;
     }
