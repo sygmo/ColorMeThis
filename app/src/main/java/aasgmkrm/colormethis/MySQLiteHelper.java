@@ -48,9 +48,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // SQL statement to create book table
         String CREATE_PALETTE_TABLE = "CREATE TABLE " + TABLE_PALETTE + " (" +
                 KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                KEY_COLOR + " INTEGER, "+
+                KEY_COLOR + " INTEGER, " +
                 KEY_COLOR_NAME + " TEXT, " +
-                KEY_COLOR_RED + " INTEGER " +
+                KEY_COLOR_RED + " INTEGER, " +
                 KEY_COLOR_GREEN + " INTEGER, " +
                 KEY_COLOR_BLUE + " INTEGER, " +
                 KEY_COLOR_HEX + " TEXT); ";
