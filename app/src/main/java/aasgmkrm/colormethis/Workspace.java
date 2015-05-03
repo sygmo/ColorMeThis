@@ -37,7 +37,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by smercier91 on 4/6/15.
@@ -350,9 +349,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         }
     }
 
-
-
-
     @Override
     protected Dialog onCreateDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -360,7 +356,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         String save_palette = "Save color to palette";
         CharSequence[] options = new CharSequence[] { copy_hex, save_palette };
 
-        builder.setTitle("Choose an option");
+        builder.setTitle(R.string.option);
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -384,6 +380,8 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                             colorGreen,
                             colorBlue,
                             colorHex));
+
+                    db.close();
 
                     Log.d(TAG, "Added to database: " +
                             colorBox + ", " +

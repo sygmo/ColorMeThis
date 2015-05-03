@@ -15,7 +15,6 @@ import java.util.List;
  */
 
 public class PaletteAdapter extends BaseAdapter {
-
     Context context;
 
     protected List<PaletteColor> listPalettes;
@@ -32,11 +31,11 @@ public class PaletteAdapter extends BaseAdapter {
     }
 
     public PaletteColor getItem(int position) {
-        return listPalettes.get(position);
+        return listPalettes.get(getCount() - position - 1);
     }
 
     public long getItemId(int position) {
-        return listPalettes.get(position).getId();
+        return listPalettes.get(getCount() - position - 1).getId();
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -57,19 +56,22 @@ public class PaletteAdapter extends BaseAdapter {
                     .findViewById(R.id.text_color_red);
             holder.textColorGreen = (TextView) convertView
                     .findViewById(R.id.text_color_green);
+            holder.textColorBlue = (TextView) convertView
+                    .findViewById((R.id.text_color_blue));
 
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        PaletteColor palette = listPalettes.get(position);
+        PaletteColor palette = listPalettes.get(getCount() - position - 1);
+
         holder.colorDisplayer.setColor(palette.getColor());
         holder.textColorName.setText(palette.getColorName());
         holder.textColorHex.setText(palette.getColorHex());
-        holder.textColorRed.setText(palette.getColorRed());
-        holder.textColorGreen.setText(palette.getColorGreen());
-        holder.textColorBlue.setText(palette.getColorBlue());
+        holder.textColorRed.setText(Integer.toString(palette.getColorRed()));
+        holder.textColorGreen.setText(Integer.toString(palette.getColorGreen()));
+        holder.textColorBlue.setText(Integer.toString(palette.getColorBlue()));
 
         return convertView;
     }

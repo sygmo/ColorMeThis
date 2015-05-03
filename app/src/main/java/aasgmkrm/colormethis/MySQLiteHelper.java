@@ -39,6 +39,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             KEY_COLOR_BLUE,
             KEY_COLOR_HEX };
 
+    private String query;
+
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -136,10 +138,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         List<PaletteColor> colorsList = new LinkedList<PaletteColor>();
 
         // build the query
-        String query = "SELECT * FROM " + TABLE_PALETTE;
+        query = "SELECT * FROM " + TABLE_PALETTE;
 
         // get reference to writable DB
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
         // go over each row, build color and add it to list
@@ -159,6 +161,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 colorsList.add(pc);
             } while (cursor.moveToNext());
         }
+        db.close();
 
         Log.d("getAllPaletteColors()", colorsList.toString());
 

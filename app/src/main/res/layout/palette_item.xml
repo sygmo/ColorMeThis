@@ -5,6 +5,7 @@
     android:orientation="horizontal"
     android:padding="8dp" >
 
+
     <RelativeLayout
         android:id="@+id/color_display_box"
         android:layout_width="60dp"
