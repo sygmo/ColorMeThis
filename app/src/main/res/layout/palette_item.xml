@@ -19,14 +19,17 @@
         android:id="@+id/palette_item_color"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="10dp">
 
         <LinearLayout
             android:id="@+id/palette_color_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/label_color_name"
@@ -44,14 +47,16 @@
                 android:layout_weight="2"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textStyle="normal" />
+
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/palette_color_hex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/palette_color_name"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/label_color_hex"
@@ -69,14 +74,16 @@
                 android:layout_weight="2"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textStyle="normal" />
+
         </LinearLayout>
 
+
         <LinearLayout
-            android:id="@+id/palette_color_red"
+            android:id="@+id/palette_color_rgb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/palette_color_hex"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/label_color_red"
@@ -94,14 +101,6 @@
                 android:layout_weight="2"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textStyle="normal" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/palette_color_green"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/palette_color_red"
-            android:orientation="horizontal" >
 
             <TextView
                 android:id="@+id/label_color_green"
@@ -119,14 +118,6 @@
                 android:layout_weight="2"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textStyle="normal" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/palette_color_blue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/palette_color_green"
-            android:orientation="horizontal" >
 
             <TextView
                 android:id="@+id/label_color_blue"
@@ -144,6 +135,7 @@
                 android:layout_weight="2"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textStyle="normal" />
+
         </LinearLayout>
 
     </RelativeLayout>
