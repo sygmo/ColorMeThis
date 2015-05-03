@@ -353,7 +353,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     protected Dialog onCreateDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String copy_hex = "Copy hex to clipboard";
-        String save_palette = "Save color to palette";
+        String save_palette = "Save color to My Palette";
         CharSequence[] options = new CharSequence[] { copy_hex, save_palette };
 
         builder.setTitle(R.string.option);
@@ -367,7 +367,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                     clipboard.setText(colorHex);
 
                     context = getApplicationContext();
-                    text = "Copied " + colorHex + " to the clipboard.";
+                    text = "Successfully copied " + colorHex + ".";
                     duration = Toast.LENGTH_SHORT;
                     toast = Toast.makeText(context, text, duration);
                     toast.show();

@@ -86,55 +86,90 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/label_color_red"
+                android:id="@+id/label_color_rgb"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/color_red"
+                android:text="@string/color_rgb"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_weight="1" />
 
-            <TextView
-                android:id="@+id/text_color_red"
+            <RelativeLayout
+                android:id="@+id/all_rgb"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="normal" />
+                android:layout_weight="2" >
 
-            <TextView
-                android:id="@+id/label_color_green"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/color_green"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold" />
+                <LinearLayout
+                    android:id="@+id/rgb_displayer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
-            <TextView
-                android:id="@+id/text_color_green"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="normal" />
+                    <RelativeLayout
+                        android:id="@+id/red_displayer"
+                        android:layout_width="4dp"
+                        android:layout_height="14dp"
+                        android:background="@color/Red"
+                        android:layout_marginTop="5dp"
+                        android:layout_toRightOf="@id/rgb_displayer">
 
-            <TextView
-                android:id="@+id/label_color_blue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/color_blue"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold" />
+                        </RelativeLayout>
 
-            <TextView
-                android:id="@+id/text_color_blue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="normal" />
+                    <TextView
+                        android:id="@+id/text_color_red"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textStyle="bold"
+                        android:layout_weight="1" />
+
+                    <RelativeLayout
+                        android:id="@+id/green_displayer"
+                        android:layout_width="4dp"
+                        android:layout_height="14dp"
+                        android:background="@color/Green"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_toRightOf="@id/text_color_red">
+
+                        </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/text_color_green"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/green_displayer"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textStyle="bold"/>
+
+                    <RelativeLayout
+                        android:id="@+id/blue_displayer"
+                        android:layout_width="4dp"
+                        android:layout_height="14dp"
+                        android:background="@color/Blue"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_toRightOf="@id/text_color_green">
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/text_color_blue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/blue_displayer"
+                        android:layout_marginLeft="5dp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
 
         </LinearLayout>
 

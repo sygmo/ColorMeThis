@@ -5,19 +5,20 @@
         android:key="color_name"
         android:title="Color Name"
         android:defaultValue="true"
-        android:summary="Display or hide color names." />
+        android:summary="Uncheck to hide color name." />
 
-    <CheckBoxPreference
-        android:key="color_rgb"
-        android:title="RGB Value"
-        android:defaultValue="true"
-        android:summary="Display or hide the color's RGB values." />
 
     <CheckBoxPreference
         android:key="color_hex"
         android:title="Hex Value"
         android:defaultValue="true"
-        android:summary="Display or hide the color's hexadecimal value." />
+        android:summary="Uncheck to hide hexadecimal value." />
+
+    <CheckBoxPreference
+        android:key="color_rgb"
+        android:title="RGB Value"
+        android:defaultValue="true"
+        android:summary="Uncheck to hide RGB values." />
 
 
 </PreferenceScreen>

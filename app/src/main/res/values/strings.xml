@@ -12,12 +12,10 @@
                         help colorblind people and graphic designers with this app.</string>
     <string name="photo_select">Select a photo.</string>
     <string name="title_activity_workspace_drawer">WorkspaceDrawer</string>
-    <string name="option">Choose an option.</string>
-    <string name="color_name">Name: </string>
+    <string name="option">Choose an option</string>
+    <string name="color_name">Color: </string>
     <string name="color_hex">Hex: </string>
-    <string name="color_red">R: </string>
-    <string name="color_green">G: </string>
-    <string name="color_blue">B: </string>
+    <string name="color_rgb">RGB: </string>
     <string name="quit_question">Would you like to quit?</string>
     <string name="delete_question">Are you sure you want to delete this color?</string>
     <string name="yes">Yes</string>
