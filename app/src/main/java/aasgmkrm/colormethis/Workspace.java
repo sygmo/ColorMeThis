@@ -307,14 +307,27 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         colorBlue = Color.blue(color);
         colorHex = String.format("#%06X", (0xFFFFFF & color));
 
+        getSettings();
+
         colorDisplayer.setColor(color);
         if (mColorNameOn) { colorNameDisplayer.setText(colorName); }
+        else { colorNameDisplayer.setText(null); }
+
         if (mColorHexOn) { hexDisplayer.setText("Hex: "+ colorHex); }
+        else { hexDisplayer.setText(null); }
+
         if (mColorRGBOn) {
             red_text.setText("" + colorRed);
             green_text.setText("" + colorGreen);
             blue_text.setText("" + colorBlue);
         }
+
+        else {
+            red_text.setText(null);
+            green_text.setText(null);
+            blue_text.setText(null);
+        }
+
         Log.d("ColorHex", colorHex);
     }
 
