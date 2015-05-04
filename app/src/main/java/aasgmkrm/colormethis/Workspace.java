@@ -71,8 +71,8 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     int reqWidth;
     int reqHeight;
 
+    // For matrices:
     private static final float MAX_ZOOM = 3.0f;
-
     private float density;
     RectF displayRect = new RectF();
 
@@ -81,6 +81,9 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     TextView colorNameDisplayer;
     TextView hexDisplayer;
     TextView rgbDisplayer;
+    TextView red_text;
+    TextView green_text;
+    TextView blue_text;
 
     // For toasts:
     private Context context;
@@ -104,22 +107,17 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     int colorBlue;
     String colorHex;
 
-    TextView red_text;
-    TextView green_text;
-    TextView blue_text;
-
+    // For gallery image:
     private ImageView mGrabPhotoView;
     private static final int SELECT_PICTURE = 1;
     private String selectedImagePath;
 
+    // For image buttons:
     private ImageButton returnToCamera;
     private ImageButton settingsBtn;
     private ImageButton openLibrary;
 
-    private Bitmap mBitmap;
     private static int orientation = 0; // NEW CODE!
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,16 +170,11 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             reqWidth = size.x;
             reqHeight = size.y;
 
-            // new code
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
-            //int imageHeight = options.outHeight;
-            //int imageWidth = options.outWidth;
-            // String imageType = options.outMimeType;
-
             Bitmap myBitmap = decodeSampledBitmapFromResource(imgFile, reqWidth, reqHeight);
-            //Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
             myImage = (ImageView) findViewById(R.id.selection);
 
             // Used for scroll limit
@@ -224,25 +217,21 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 display.getSize(size);
                 reqWidth = size.x;
                 reqHeight = size.y;
-                String message = data.getStringExtra(ColorMeThis.WORKSPACE_MESSAGE);
-                if (message != null) {
-                    File imgFile = new File(message);
-                    mBitmap = Workspace.decodeSampledBitmapFromResource(imgFile, reqWidth, reqHeight);
+                String newMessage = selectedImagePath;
+
+                if (newMessage != null) {
+                    File newImgFile = new File(newMessage);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(newImgFile.getAbsolutePath(), options);
+                    Bitmap mBitmap = decodeSampledBitmapFromResource(newImgFile, reqWidth, reqHeight);
+
+                    bitmapWidth = mBitmap.getWidth();
+                    bitmapHeight = mBitmap.getHeight();
+
+                    myImage.setImageBitmap(mBitmap);
+                    myImage.setOnTouchListener(this);
                 }
-                //Bitmap bm = decodeSampledBitmapFromResource(imageFile, reqWidth, reqHeight);
-
-                myImage.setImageBitmap(mBitmap);
-
-                // OLD CODE
-                /*
-                if (selectedImagePath != null) {
-                    // open image view (workspace)
-                    myImage.setImageBitmap(null);
-                }
-
-                else
-                    Log.d(TAG, "The selected image path is NULL.");
-            }*/
             }
         }
     }
@@ -285,9 +274,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
             if (imageFile.exists()) {
-                //Bitmap bm = BitmapFactory.decodeFile(imageLocation);
-                // NEW CODE
-                // get size of display
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
@@ -374,28 +360,39 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 }
 
                 else {
-                    db.addPaletteColor(new PaletteColor(colorBox,
-                            colorName,
-                            colorRed,
-                            colorGreen,
-                            colorBlue,
-                            colorHex));
+                    if (colorName != null) {
 
-                    db.close();
+                        db.addPaletteColor(new PaletteColor(colorBox,
+                                colorName,
+                                colorRed,
+                                colorGreen,
+                                colorBlue,
+                                colorHex));
 
-                    Log.d(TAG, "Added to database: " +
-                            colorBox + ", " +
-                            colorName + ", " +
-                            colorRed + ", " +
-                            colorGreen + ", " +
-                            colorBlue + ", " +
-                            colorHex);
+                        db.close();
 
-                    context = getApplicationContext();
-                    text = "Saved " + colorName + " (" + colorHex + ") to the Palette!";
-                    duration = Toast.LENGTH_SHORT;
-                    toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                        Log.d(TAG, "Added to database: " +
+                                colorBox + ", " +
+                                colorName + ", " +
+                                colorRed + ", " +
+                                colorGreen + ", " +
+                                colorBlue + ", " +
+                                colorHex);
+
+                        context = getApplicationContext();
+                        text = "Saved " + colorName + " (" + colorHex + ") to the Palette!";
+                        duration = Toast.LENGTH_SHORT;
+                        toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                    }
+
+                    else {
+                        context = getApplicationContext();
+                        text = "You can only save colors!";
+                        duration = Toast.LENGTH_SHORT;
+                        toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                    }
                 }
             }
         });
@@ -534,21 +531,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                 y = (int) event.getY();
 
                 colorBox = getColor(x, y);
-
-/*               try {
-                    color = Utils.findColor(myImage, x, y);
-                } catch (ArithmeticException e) {
-                    Log.d(TAG, "Divide by zero.");
-                }*/
-
                 setColorDisplayer(colorBox);
-
-/*              Context context = getApplicationContext();
-                CharSequence text = "R: " + Color.red(color) + "  G: " + Color.green(color) + "  B: "
-                        + Color.blue(color);
-                int duration = Toast.LENGTH_LONG;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();*/
 
                 Log.d(TAG, "x: " + x + ", y: " + y + ", onSingleTapUp: " + event.toString());
                 break;
@@ -762,11 +745,13 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
 
         for (int i = 0; i < all_colors.length(); i++) {
             int currentColor = all_colors.getColor(i, 0);
+
             if (color == currentColor) {
                 closestColor = all_color_names[i];
                 break;
-            } else {
+            }
 
+            else {
                 double d = distance(color, currentColor);
 
                 if (d < closest) {
