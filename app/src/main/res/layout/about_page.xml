@@ -3,38 +3,98 @@
     android:id="@+id/project_info"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:weightSum="1">
 
-    <!-- Will add the icon when available.
-    <ImageView
-        android:id="@+id/colormethis_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="500px"
-        android:src="@drawable/icon"
-        android:layout_weight="0.19"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="25dp" />
-    -->
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
-    <TextView android:id="@+id/names"
-        android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25px"
-        android:textColor="#000000"
-        android:text="@string/names"
-        android:layout_gravity="center_horizontal"
-        android:textSize="20dp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <TextView android:id="@+id/info"
-        android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25px"
-        android:textColor="#000000"
-        android:text="@string/info"
-        android:layout_gravity="center_horizontal"
-        android:textSize="15dp" />
+            <ImageView
+                android:id="@+id/colormethis_icon"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/colormethis"
+                android:layout_gravity="center_horizontal" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="25dp"
+                android:textColor="#a3d39c"
+                android:gravity="center_horizontal"
+                android:text="Color Me This!"
+                android:id="@+id/textView"
+                android:layout_below="@+id/colormethis_icon"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/developers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:text="@string/developers"
+                android:layout_gravity="center_horizontal"
+                android:textSize="15sp"
+                android:layout_marginTop="20dp" />
+
+            <TextView
+                android:id="@+id/names"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/developers"
+                android:textColor="#000000"
+                android:text="@string/names"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:layout_marginTop="5dp" />
+
+            <TextView
+                android:id="@+id/info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/names"
+                android:layout_marginTop="20dp"
+                android:textColor="#000000"
+                android:text="@string/info"
+                android:layout_gravity="center_horizontal"
+                android:textSize="15sp"
+                android:gravity="center_horizontal" />
+
+            <TextView
+                android:id="@+id/info_uses"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/info"
+                android:layout_marginTop="20dp"
+                android:textColor="#000000"
+                android:text="@string/info_uses"
+                android:layout_gravity="center_horizontal"
+                android:textSize="15sp"
+                android:gravity="center_horizontal" />
+
+            <TextView
+                android:id="@+id/info_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/info_uses"
+                android:layout_marginTop="20dp"
+                android:textColor="#000000"
+                android:text="@string/info_end"
+                android:layout_gravity="center_horizontal"
+                android:textSize="15sp"
+                android:gravity="center_horizontal" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

@@ -11,7 +11,7 @@
         android:src="@drawable/colormethis"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="152dp" />
+        android:layout_marginTop="150dp" />
 
     <TextView
         android:layout_width="fill_parent"

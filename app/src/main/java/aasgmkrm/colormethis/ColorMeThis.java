@@ -277,7 +277,7 @@ public class ColorMeThis extends Activity implements
 
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
-            if (imageFile.exists()) {   // TODO: is there a better way to do this?
+            if (imageFile.exists()) {
                 //Bitmap bm = BitmapFactory.decodeFile(imageLocation);
                 // NEW CODE
                 Display display = getWindowManager().getDefaultDisplay();
