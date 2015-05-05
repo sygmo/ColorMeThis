@@ -160,16 +160,15 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         db = new MySQLiteHelper(this);
         copyOrSave = (ImageButton) findViewById(R.id.add_to_library);
 
+        // Get the size of the display.
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        reqWidth = size.x;
+        reqHeight = size.y;
+
         File imgFile = new File(message);
         if(imgFile.exists()) {
-
-            // get size of display
-            Display display = getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            reqWidth = size.x;
-            reqHeight = size.y;
-
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
@@ -208,15 +207,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             if (requestCode == SELECT_PICTURE) {
                 Workspace activity = Workspace.this;
                 selectedImagePath = getImagePath(data, activity);
-
-                // NEW CODE
-                //mBitmap = BitmapFactory.decodeFile(selectedImagePath);
-                // get size of display
-                Display display = getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                reqWidth = size.x;
-                reqHeight = size.y;
                 String newMessage = selectedImagePath;
 
                 if (newMessage != null) {
@@ -229,8 +219,20 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
                     bitmapWidth = mBitmap.getWidth();
                     bitmapHeight = mBitmap.getHeight();
 
+                    RectF drawableRect = new RectF(0, 0, bitmapWidth, bitmapHeight);
+                    RectF viewRect = new RectF(0, 0, reqWidth, reqHeight);
+                    matrix = new Matrix();
+                    matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
+                    myImage.setImageMatrix(matrix);
                     myImage.setImageBitmap(mBitmap);
-                    myImage.setOnTouchListener(this);
+                }
+
+                else {
+                    context = getApplicationContext();
+                    text = "Image retrieval unsuccessful: the image path does not exist.";
+                    duration = Toast.LENGTH_LONG;
+                    toast = Toast.makeText(context, text, duration);
+                    toast.show();
                 }
             }
         }
@@ -274,12 +276,17 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
             if (imageFile.exists()) {
+
+                // This needs to be set separately
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
                 reqWidth = size.x;
                 reqHeight = size.y;
+
                 Bitmap bm = decodeSampledBitmapFromResource(imageFile, reqWidth, reqHeight);
+                bitmapWidth = bm.getWidth();
+                bitmapHeight = bm.getHeight();
                 mGrabPhotoView.setImageBitmap(bm);
             }
         }
