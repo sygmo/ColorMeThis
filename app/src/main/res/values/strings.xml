@@ -16,6 +16,8 @@
         associated to a selected pixel. You can check the name, hexadecimal value, and RGB values
         of that color.  You can also save your favorite colors in your Palette!
     </string>
+    <string name="disclaimer"><b>Disclaimer:</b> depending on the lighting of a photo or your camera
+        quality, the color values returned may not be exactly true-to-life.</string>
     <string name="info_end">We hope you enjoy using Color Me This!</string>
     <string name="photo_select">Select a photo.</string>
     <string name="title_activity_workspace_drawer">WorkspaceDrawer</string>
