@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <color name="black_overlay">#660000</color>
+    <color name="black_overlay">#66000000</color>
 
     <item name="Silver" type="color">#C0C0C0</item>
     <item name="Blue" type="color">#0000FF</item>
