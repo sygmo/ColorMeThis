@@ -82,22 +82,10 @@
                 android:gravity="center_horizontal" />
 
             <TextView
-                android:id="@+id/disclaimer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/info_uses"
-                android:layout_marginTop="20dp"
-                android:textColor="#000000"
-                android:text="@string/disclaimer"
-                android:layout_gravity="center_horizontal"
-                android:textSize="15sp"
-                android:gravity="center_horizontal" />
-
-            <TextView
                 android:id="@+id/info_end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/disclaimer"
+                android:layout_below="@+id/info_uses"
                 android:layout_marginTop="20dp"
                 android:textColor="#000000"
                 android:text="@string/info_end"
