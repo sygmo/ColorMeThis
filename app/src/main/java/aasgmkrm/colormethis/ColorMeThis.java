@@ -15,14 +15,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -35,13 +32,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ColorMeThis extends Activity implements
-        GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener {
-
-    private static final String DEBUG_TAG = "Gestures";
-    private GestureDetectorCompat mDetector;
-
+public class ColorMeThis extends Activity {
     private static final String TAG = "Color Me This!";
     private static final String PIC_TAG = "Picture";
 
@@ -62,10 +53,11 @@ public class ColorMeThis extends Activity implements
     private String selectedImagePath;
     private ImageView mGrabPhotoView;
 
+    // Others
     private final int DIALOG_QUIT_ID = 0;
     public final static String WORKSPACE_MESSAGE = "aasgmkrm.colormethis.MESSAGE";
 
-    // NEW CODE
+    // Screen width and height
     int reqWidth;
     int reqHeight;
 
@@ -74,10 +66,6 @@ public class ColorMeThis extends Activity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        // Instantiate gesture detector
-        mDetector = new GestureDetectorCompat(this, this);
-        mDetector.setOnDoubleTapListener(this);
 
         mCamera = getCameraInstance();
         mCameraPreview = new CameraPreview(this, mCamera);
@@ -93,70 +81,6 @@ public class ColorMeThis extends Activity implements
 
         setGrabPhotoImage();
         mGrabPhotoView.setOnClickListener(new GrabClickListener());
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        this.mDetector.onTouchEvent(event);
-        // Be sure to call the superclass implementation
-        return super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onDown(MotionEvent event) {
-        Log.d(DEBUG_TAG,"onDown: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onFling(MotionEvent event1, MotionEvent event2,
-                           float velocityX, float velocityY) {
-        Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
-        return true;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-                            float distanceY) {
-        Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
-        return true;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent event) {
-        x = event.getX();
-        y = event.getY();
-
-        Log.d(DEBUG_TAG, "x: " + x + ", y: " + y + ", onSingleTapUp: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
-        return true;
     }
 
     /** Release the camera in onPause(). */
@@ -181,11 +105,6 @@ public class ColorMeThis extends Activity implements
         mCameraPreview.setMCamera(mCamera);
         try {
             mCamera.setPreviewCallback(null);
-
-            //mCamera.setPreviewCallback(null);
-            //mCameraPreview = new CameraPreview(this, mCamera);//set preview
-            //preview.addView(mCameraPreview);
-
             mCameraPreview.previewStart();
         } catch (Exception e) {
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
@@ -219,6 +138,8 @@ public class ColorMeThis extends Activity implements
         return false;
     }
 
+
+    /** Dialog for quitting */
     @Override
     public void onBackPressed() {
         showDialog(DIALOG_QUIT_ID);
@@ -249,17 +170,8 @@ public class ColorMeThis extends Activity implements
         return builder.create();
     }
 
-    /** For SETTINGS: adjustments to be made at a later time.
-     *  Files to check: Settings.java, preferences.xml
-     *
-     @Override
-     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-     if (requestCode == RESULT_CANCELED) {
-     ...
-     }
-     }
-     */
 
+    /** Grab the most recent image for the grab photo button */
     private void setGrabPhotoImage() {
         String[] projection = new String[]{
                 MediaStore.Images.ImageColumns._ID,
@@ -278,8 +190,6 @@ public class ColorMeThis extends Activity implements
             String imageLocation = cursor.getString(1);
             File imageFile = new File(imageLocation);
             if (imageFile.exists()) {
-                //Bitmap bm = BitmapFactory.decodeFile(imageLocation);
-                // NEW CODE
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
@@ -292,6 +202,8 @@ public class ColorMeThis extends Activity implements
         }
     }
 
+
+    /** Camera methods */
     private Camera getCameraInstance() {
         Camera camera = null;
         try {
@@ -316,6 +228,8 @@ public class ColorMeThis extends Activity implements
         public void onClick (View view) { mCamera.takePicture(null, null, mPicture); }
     }
 
+
+    /** Saving images to file */
     PictureCallback mPicture = new PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -327,15 +241,6 @@ public class ColorMeThis extends Activity implements
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
                 fos.close();
-
-                /*
-                Context context = getApplicationContext();
-                CharSequence text = "Photo saved to " + pictureFile.getPath();
-                int duration = Toast.LENGTH_SHORT;
-                Log.d(PIC_TAG, pictureFile.getPath());
-
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();*/
 
                 mCamera.startPreview();
 
@@ -376,6 +281,7 @@ public class ColorMeThis extends Activity implements
         return mediaFile;
     }
 
+
     private class GrabClickListener implements View.OnClickListener {
         public void onClick (View view) {
             Intent intent = new Intent(Intent.ACTION_PICK,
@@ -384,15 +290,13 @@ public class ColorMeThis extends Activity implements
         }
     }
 
+    /** Taking the image and setting it to workspace */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
                 ColorMeThis activity = ColorMeThis.this;
                 selectedImagePath = getImagePath(data, activity);
-                //mBitmap = BitmapFactory.decodeFile(selectedImagePath);
-                //mImageView.setImageBitmap(mBitmap);
 
-                // NEW CODE
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
@@ -406,7 +310,6 @@ public class ColorMeThis extends Activity implements
                 mImageView.setImageBitmap(mBitmap);
 
                 if (selectedImagePath != null) {
-                    // open image view (workspace)
                     mImageView.setImageBitmap(null);
                     Intent intent = new Intent(ColorMeThis.this, Workspace.class);
                     intent.putExtra(WORKSPACE_MESSAGE, selectedImagePath);

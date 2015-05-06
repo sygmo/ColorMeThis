@@ -7,48 +7,57 @@ b. Brief instruction:
     Color Me This is a color detection application that aims to guide those who are colorblind as well as those who practice graphics design by determining and naming specific colors, their decimal values, and their hexadecimal values.  After opening the app, the user may either take a picture or upload a picture to analyze it.  In the event of a touch on the screen, a specific area or pixel will be selected, and the app will determine what the specific color of that selection is.  On top, there exists a menu that displays the About page listing the developers and mission, a Settings page to make various changes to the app's features, and a Palette page to save the user's favorite colors.
 
 c. Features / use cases completed:
-    - Camera opens and closes without crashing.
-    - Capturing a photo and saving it to an external directory.
-    - Grabbing pre-existing photos (but not analyze them).
-	- The color picker (RGB values only, by clicking).
-    - Forced portrait mode, saves picture in portrait mode as well.
-    - The menu, located on the action bar in the overflow.
-    - All menu items present, but only the About page is accessible.
-	- Pulling the photo taken into ImageView.
-    - Touch events, although not specified.
+    - Custom icon.
+    - Splash screen page with custom icon.
+    - Camera preview that opens and closes without crashing.
+    - Overlayed action bar with overflow menu in the camera preview.
+    - A dialog after pressing back in the camera preview to ask the user if they really want to quit.
+    - Camera zoom feature.
+    - Capturing a photo and saving it to an external directory (Pictures/ColorMeThis) as well as putting them into the ImageView.
+    - Grabbing pre-existing photos from the gallery and putting them into the ImageView.
+	- The color picker, enabled by touch events (single tap) with about 340 colors saved in colors.xml.
+    - Forced portrait mode.
+    - The color displayer in workspace containing the touched pixel's color, its name, hex value, and decimal value.
+    - Full-screen immersive mode in workspace.
+    - The menu located on the action bar overflow in the camera preview and a settings button in workspace.
+    - An about page (scroll view) with the names of developers, the description, and a disclaimer.
+    - Settings with the options to turn on or off the color names, hex, and decimal values in workspace.
+    - My Palette, using an SQLite database to store the user's data, which gets the color, its name, hex value, and decimal value.
+    - A long press button in the color displayer for the user to copy the color's hex value or to store the data into My Palette.
+    - A long press feature in My Palette for the user to copy the item's hex value or to erase the item (and refreshing the activity).
+    - The ability to pan and zoom in workspace without going beyond the bounds or having no limits to the zooms.
+    - Upload from gallery button in both the camera preview and the workspace that gets the user's most recent photo.
+    - Various custom buttons and icons designed by Andres.
+    - Numerous (alert) dialogs for exiting, copying, saving, deleting, etc.
+    - Compatibility implementations for the camera preview for lower APIs (specifically orientation and bitmap manipulation).
 
-d. Features / use cases not completed (in alpha):
-    - Specification of touch events. 
-	- The ability to manipulate the photo (zoom, etc.)
-	- Color names and hexadecimal when color is picked.
-    - The information bar that displays the color and other info.
-    - The ability to copy the hexadecimal value to clipboard.
-    - The ability to analyze pre-existing photos.
-    - The Settings page is incomplete (i.e. the items do not exist yet).
-    - Support for devices with different screens (if image is too large, app does not work).
+d. Features / use cases not completed (in beta):
+    - Navigator on the top right corner (decided to throw away for more visibility in workspace).
+    - Relocation of the menu to the bottom right corner (decided to keep it in the action bar overflow).
 
-e. Features / use cases not part of the (alpha) prototype:
-    - Splash screen page. (beta)
-    - Addition of the navigator on the top right corner. (beta)
-    - Creation of the Palette to save colors. (beta)
-    - A save button for the Palette. (beta)
-    - Relocation of the menu to the bottom right corner. (beta)
-    - Front/back camera, support for devices with multiple cameras. (beta / future)
-    - Turn on / off / auto flash. (future)
-    - Adding filters to brighten / darken photos. (future)
+e. Features / use cases not part of the beta:
+    - The ability to use both the front and back camera.
+    - The ability to turn on / off / auto flash.
+    - The ability to add filters to brighten / darken the photo for additional accuracy.
 
 f. Classes / major chunks of code obtained:
-	- Camera API:
-	http://developer.android.com/guide/topics/media/camera.html
-	- Find components of color of the bitmap at x, y.: Bitmap << 2D Graphics << Android:  http://www.java2s.com/Code/Android/2D-Graphics/Findcomponentsofcolorofthebitmapatxy.htm
+	- Camera API: http://developer.android.com/guide/topics/media/camera.html
 	- Camera.Parameters used to save picture in correct orientation: http://stackoverflow.com/questions/17782806/camera-app-rotates-images-by-90-degrees
+	- Camera pinch-to-zoom: http://stackoverflow.com/questions/8120753/android-camera-preview-zoom-using-double-finger-touch
 	- Getting an image from the gallery:  http://stackoverflow.com/questions/2169649/get-pick-an-image-from-androids-built-in-gallery-app-programmatically
+	- Full-screen immersive mode: https://developer.android.com/training/system-ui/immersive.html
+	- Restricting panning and zooming : http://stackoverflow.com/questions/5385071/restricting-panning-and-zooming
+	- MotionEvent -> Zoom and Scroll in workspace: http://stackoverflow.com/questions/6650398/android-imageview-zoom-in-and-zoom-out
+	- Getting the touched color pixel: http://android-er.blogspot.com/2012/10/get-touched-pixel-color-of-scaled.html
+    - Adjusting the pan (adding a scroll limit): http://twnin.blogspot.com/2011/04/extend-gallery-support.html
 
 g. Classes / major chunks of code completed:
-	- Touch events.
-	- Listeners for the capture and grab photo buttons.
-	- Layouts for main and about_page (xml files) as well as AboutActivity.java for the About page.
-	- main_menu.xml for the menu items.
-	- Settings.java and its implementation.
-	- Additions to strings.xml.
-	- Workspace.java and its associated files for grabbing images and analyzing colors.
+	- Touch events for camera preview (zoom) and workspace (pan and zoom, single tap to get color).
+	- Numerous listeners (long press, on click, on touch, etc.) for various buttons including the shutter and grab image button.
+	- Layouts for the splash screen, main page, about page, workspace, and My Palette.
+	- Attaching the user's latest taken image to the grab photo button.
+	- Various shapes drawn in xml files, not just custom drawables.
+	- The settings preference activity and shared preferences.
+	- Distance calculation to get the color.
+	- Additions to strings.xml as well as colors.xml.
+	- An adapter and SQLite database for My Palette (tutorial used: http://hmkcode.com/android-simple-sqlite-database-tutorial/).

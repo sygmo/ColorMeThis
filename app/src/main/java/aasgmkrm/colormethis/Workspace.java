@@ -42,7 +42,6 @@ import java.io.File;
  * Created by smercier91 on 4/6/15.
  */
 public class Workspace extends ActionBarActivity implements View.OnTouchListener {
-
     ImageView myImage;
     private static final String TAG = "Gestures";
 
@@ -435,9 +434,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
 
-        // NEW CODE
         // rotate image if needed
-        //int rotation = getCameraPhotoOrientation(context, myBitmap., imgFile.getAbsolutePath());
         try {
             ExifInterface exif = new ExifInterface(imgFile.getAbsolutePath());
             orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
@@ -446,9 +443,7 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         }
 
         Bitmap bmRotated = rotateBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options), orientation);
-
         return bmRotated;
-        //return BitmapFactory.decodeFile(imgFile.getAbsolutePath(), options);
     }
 
 
@@ -475,7 +470,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
         return inSampleSize;
     }
 
-    // NEW CODE
     // rotates the bitmap to portrait orientation
     public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
 
@@ -519,7 +513,6 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
             e.printStackTrace();
             return null;
         }
-        //return bitmap;
     }
 
 
@@ -683,6 +676,10 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     }
 
 
+    /** Getting the color of a touched pixel
+     *  Source:
+     *  http://android-er.blogspot.com/2012/10/get-touched-pixel-color-of-scaled.html
+     */
     private int getColor(int x, int y) {
         float[] xy = new float[] {x, y};
 
@@ -708,6 +705,10 @@ public class Workspace extends ActionBarActivity implements View.OnTouchListener
     }
 
 
+    /** Adjusting the pan (adding a scroll limit)
+     *  Source:
+     *  http://twnin.blogspot.com/2011/04/extend-gallery-support.html
+     */
     private void adjustPan() {
         displayRect.set(0, 0, reqWidth, reqHeight);
         float[] matrixValues = new float[9];
